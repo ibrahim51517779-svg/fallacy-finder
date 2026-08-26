@@ -1,4 +1,4 @@
-import streamlit as st
+
 import google.generativeai as genai
 import os
 import json
@@ -19,7 +19,7 @@ st.set_page_config(
 )
 
 # -------------------- AI --------------------
-genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 model = genai.GenerativeModel("gemini-3.6-flash")
 
 
@@ -773,17 +773,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-
-st.markdown(
-    """
-    <div class="fx-stars">
-        <span>✦</span><span>✧</span><span>✦</span><span>✧</span>
-        <span>✦</span><span>✧</span><span>✦</span><span>✧</span>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
 # -------------------- Intro screen --------------------
 if "entered" not in st.session_state:
     st.session_state.entered = False
@@ -822,7 +811,7 @@ if not st.session_state.entered:
 st.markdown(
     """
     <div class="hero">
-        <div class="hero-kicker"><span class="ai-status"><span class="ai-dot"></span> LIVE · AI REASONING ENGINE</span></div>
+        <div class="hero-kicker">🔴 LIVE · AI REASONING ENGINE</div>
         <div class="hero-title" style="font-size:clamp(2.8rem,5vw,5rem);">
             🔍 FALLACY FINDER
         </div>
@@ -914,7 +903,7 @@ if submitted:
     winner = str(result["winner"]).strip().upper()
     winner_total = total_a if winner == "A" else total_b
 
-    st.markdown('<div class="section-label">📊 02 · LIVE AI SCOREBOARD</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-label">🧠 02 · AI ANALYSIS</div>', unsafe_allow_html=True)
 
     bars = ""
     metrics = [
@@ -940,10 +929,6 @@ if submitted:
     st.markdown(
         f"""
         <div class="glass scoreboard">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
-                <span style="color:#8f879c;font-size:.68rem;font-weight:800;letter-spacing:.12em;">DATABASE RESULT · VERIFIED</span>
-                <span class="ai-status"><span class="ai-dot"></span> ANALYZED</span>
-            </div>
             <div class="vs-grid">
                 <div class="score-side">
                     <div class="score-name">🔵 ARGUMENT A</div>
@@ -1026,10 +1011,8 @@ if submitted:
         unsafe_allow_html=True,
     )
 
-    if st.button("🔄  START NEW DEBATE", use_container_width=True):
-        st.rerun()
-
     st.markdown(
         '<div class="footer">🔍 FALLACY FINDER · HACK TITANS · AI DEBATE INTELLIGENCE</div>',
         unsafe_allow_html=True,
     )
+
