@@ -298,6 +298,206 @@ footer {{
     box-shadow: 0 0 18px rgba(168,85,247,.7);
 }}
 
+
+/* ---------- Team identity ---------- */
+
+.team-presence {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.2rem;
+    margin: .2rem auto 1.8rem;
+    padding: .8rem 1.4rem;
+    width: fit-content;
+    border: 1px solid rgba(168,85,247,.22);
+    border-radius: 999px;
+    background: rgba(10,7,22,.58);
+    box-shadow: 0 0 35px rgba(168,85,247,.10), inset 0 1px 0 rgba(255,255,255,.06);
+    backdrop-filter: blur(14px);
+}
+
+.team-name {
+    text-align: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 900;
+    font-size: 1.05rem;
+    letter-spacing: .32em;
+    padding-left: .32em;
+    background: linear-gradient(90deg, #22d3ee, #a855f7, #f472b6, #facc15);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.team-caption {
+    text-align: center;
+    color: #746c81;
+    font-size: .54rem;
+    letter-spacing: .24em;
+    margin-top: .18rem;
+}
+
+.team-orbit {
+    color: #facc15;
+    font-size: .9rem;
+    animation: pulse 1.8s ease-in-out infinite;
+}
+
+/* ---------- Premium result stage ---------- */
+
+.result-stage {
+    position: relative;
+    overflow: hidden;
+    padding: 2rem;
+    border-radius: 30px;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(168,85,247,.13), transparent 45%),
+        rgba(8,6,18,.78);
+    border: 1px solid rgba(255,255,255,.09);
+    box-shadow: 0 30px 90px rgba(0,0,0,.45);
+}
+
+.result-stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(115deg, transparent 20%, rgba(255,255,255,.035) 50%, transparent 80%);
+    transform: translateX(-100%);
+    animation: resultSweep 5s ease-in-out infinite;
+}
+
+@keyframes resultSweep {
+    0%, 55% { transform: translateX(-100%); }
+    80%, 100% { transform: translateX(100%); }
+}
+
+.result-eyebrow {
+    text-align: center;
+    color: #8b7da5;
+    font-size: .65rem;
+    font-weight: 900;
+    letter-spacing: .28em;
+    text-transform: uppercase;
+}
+
+.result-heading {
+    text-align: center;
+    margin: .35rem 0 1.5rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.7rem;
+    font-weight: 900;
+    color: #fff;
+}
+
+.winner-premium {
+    position: relative;
+    overflow: hidden;
+    margin-top: 1.5rem;
+    padding: 3rem 1.5rem 2.4rem;
+    text-align: center;
+    border-radius: 32px;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(250,204,21,.25), transparent 38%),
+        radial-gradient(circle at 50% 100%, rgba(168,85,247,.13), transparent 45%),
+        rgba(25,18,12,.88);
+    border: 1px solid rgba(250,204,21,.48);
+    box-shadow:
+        0 0 0 1px rgba(250,204,21,.07) inset,
+        0 25px 80px rgba(250,204,21,.12),
+        0 0 70px rgba(168,85,247,.10);
+    animation: winnerPremium .85s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.winner-premium::before {
+    content: "";
+    position: absolute;
+    width: 170px;
+    height: 170px;
+    left: 50%;
+    top: -85px;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    border: 1px solid rgba(250,204,21,.22);
+    box-shadow: 0 0 55px rgba(250,204,21,.16);
+    animation: winnerRing 3s ease-in-out infinite;
+}
+
+.winner-premium::after {
+    content: "✦  ✧  ✦  ✧  ✦";
+    position: absolute;
+    top: 12px;
+    left: 0;
+    right: 0;
+    color: rgba(250,204,21,.48);
+    letter-spacing: 1.2rem;
+    font-size: .65rem;
+    animation: float 2.8s ease-in-out infinite;
+}
+
+@keyframes winnerPremium {
+    0% { opacity: 0; transform: translateY(35px) scale(.88); filter: blur(5px); }
+    70% { transform: translateY(-5px) scale(1.025); }
+    100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+@keyframes winnerRing {
+    0%,100% { transform: translateX(-50%) scale(.9); opacity: .45; }
+    50% { transform: translateX(-50%) scale(1.08); opacity: .9; }
+}
+
+.winner-crown {
+    position: relative;
+    z-index: 2;
+    display: block;
+    font-size: 4rem;
+    filter: drop-shadow(0 0 18px rgba(250,204,21,.45));
+    animation: crownFloat 2s ease-in-out infinite;
+}
+
+@keyframes crownFloat {
+    0%,100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-9px) rotate(2deg); }
+}
+
+.winner-main {
+    position: relative;
+    z-index: 2;
+    margin-top: .55rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.45rem, 4vw, 2.2rem);
+    font-weight: 900;
+    letter-spacing: .08em;
+    color: #facc15;
+    text-shadow: 0 0 25px rgba(250,204,21,.28);
+}
+
+.winner-score {
+    position: relative;
+    z-index: 2;
+    display: inline-block;
+    margin-top: .75rem;
+    padding: .5rem 1rem;
+    border-radius: 999px;
+    color: #fff7cc;
+    background: rgba(250,204,21,.09);
+    border: 1px solid rgba(250,204,21,.25);
+    font-size: .78rem;
+    font-weight: 900;
+    letter-spacing: .12em;
+}
+
+.winner-reason-premium {
+    position: relative;
+    z-index: 2;
+    max-width: 780px;
+    margin: 1rem auto 0;
+    color: #c8c0cc;
+    line-height: 1.7;
+    font-size: .9rem;
+}
+
 /* ---------- Section headers ---------- */
 
 .section-label {{
@@ -811,7 +1011,7 @@ if not st.session_state.entered:
 st.markdown(
     """
     <div class="hero">
-        <div class="hero-kicker">🔴 LIVE · AI REASONING ENGINE</div>
+        <div class="hero-kicker">⚡ HACK TITANS · AI REASONING ENGINE</div>
         <div class="hero-title" style="font-size:clamp(2.8rem,5vw,5rem);">
             🔍 FALLACY FINDER
         </div>
@@ -823,7 +1023,23 @@ st.markdown(
 )
 
 # -------------------- Input area --------------------
+
+st.markdown(
+    """
+    <div class="team-presence">
+        <div class="team-orbit">✦</div>
+        <div>
+            <div class="team-name">HACK TITANS</div>
+            <div class="team-caption">AI DEBATE INTELLIGENCE LAB</div>
+        </div>
+        <div class="team-orbit">✦</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
 st.markdown('<div class="section-label">📝 01 · BUILD YOUR DEBATE</div>', unsafe_allow_html=True)
+
 
 with st.container():
     st.markdown('<div class="glass topic-card">', unsafe_allow_html=True)
@@ -904,6 +1120,7 @@ if submitted:
     winner_total = total_a if winner == "A" else total_b
 
     st.markdown('<div class="section-label">🧠 02 · AI ANALYSIS</div>', unsafe_allow_html=True)
+    st.markdown('<div class="result-stage"><div class="result-eyebrow">✦ AI VERDICT ENGINE ✦</div><div class="result-heading">Argument Intelligence Report</div>', unsafe_allow_html=True)
 
     bars = ""
     metrics = [
@@ -931,7 +1148,7 @@ if submitted:
         <div class="glass scoreboard">
             <div class="vs-grid">
                 <div class="score-side">
-                    <div class="score-name">🔵 ARGUMENT A</div>
+                    <div class="score-name">🔵 SIDE A</div>
                     <div class="score-number">{total_a}</div>
                     <div class="score-max">TOTAL / 30</div>
                 </div>
@@ -939,7 +1156,7 @@ if submitted:
                 <div class="vs">VS</div>
 
                 <div class="score-side">
-                    <div class="score-name">🟣 ARGUMENT B</div>
+                    <div class="score-name">🟣 SIDE B</div>
                     <div class="score-number">{total_b}</div>
                     <div class="score-max">TOTAL / 30</div>
                 </div>
@@ -999,13 +1216,12 @@ if submitted:
 
     st.markdown(
         f"""
-        <div class="winner">
-            <span class="crown">👑</span>
-            <div class="winner-title">🏆 ARGUMENT {safe_text(winner)} WINS</div>
-            <div style="color:#facc15;font-weight:900;margin-top:.35rem;">
-                {winner_total} / 30 · STRONGER REASONING
-            </div>
-            <div class="winner-reason">{safe_text(result["overall_reason"])}</div>
+        <div class="winner-premium">
+            <span class="winner-crown">👑</span>
+            <div class="winner-main">🏆 ARGUMENT {safe_text(winner)} WINS</div>
+            <div class="winner-score">⚡ {winner_total} / 30 · STRONGER REASONING</div>
+            <div class="winner-reason-premium">{safe_text(result["overall_reason"])}</div>
+        </div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -1015,5 +1231,6 @@ if submitted:
         '<div class="footer">🔍 FALLACY FINDER · HACK TITANS · AI DEBATE INTELLIGENCE</div>',
         unsafe_allow_html=True,
     )
+
 
 
