@@ -5,13 +5,17 @@ import json
 import time
 import base64
 
-genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 model = genai.GenerativeModel("gemini-3.6-flash")
 
 
 def judge_arguments(topic, argument_a, argument_b):
     prompt = (
         "You are an impartial debate judge and logical fallacy expert.\n\n"
+        "The topic and arguments may be written in Tanglish (Tamil words spelled out "
+        "in English/Roman letters, often mixed with English words). Understand Tanglish "
+        "input naturally, the same way a bilingual Tamil-English speaker would, and judge "
+        "it fairly regardless of language mixing or spelling variations.\n\n"
         f"Topic: {topic}\n\n"
         f"Argument A: {argument_a}\n\n"
         f"Argument B: {argument_b}\n\n"
@@ -19,6 +23,11 @@ def judge_arguments(topic, argument_a, argument_b):
         "Do not favor either side based on argument length, order, or writing style alone.\n\n"
         "Evaluate both arguments on: logic, evidence, and persuasiveness (each scored 0-10). "
         "Also identify any logical fallacies present in each argument. If none are present, return an empty list.\n\n"
+        "Write the 'reason' and 'overall_reason' fields in simple Tanglish (Tamil mixed with "
+        "English, written in English letters) so a Tamil speaker finds it natural and easy to "
+        "read — for example, style like: 'Argument A logic ku evidence support pannala, "
+        "but Argument B reasoning konjam strong ah irukku.' Keep fallacy names themselves in English "
+        "(e.g. 'ad hominem', 'strawman') since those are standard terms, but explain them in Tanglish.\n\n"
         "Respond ONLY with valid JSON in exactly this format, no other text:\n\n"
         "{\n"
         '  "argument_a": {"logic": 0, "evidence": 0, "persuasiveness": 0, "reason": "text", "fallacies": []},\n'
@@ -403,14 +412,15 @@ st.markdown('<div class="team-banner">HACK TITANS</div>', unsafe_allow_html=True
 st.markdown('<div class="team-sub">PRESENTS</div>', unsafe_allow_html=True)
 st.title("🔍 Fallacy Finder")
 st.caption("Spot weak logic and score arguments fairly, powered by AI.")
+st.caption("🇮🇳 Tanglish-la type pannalam — English or Tamil (Roman letters) both work!")
 
 with st.form("judge_form"):
-    topic = st.text_input("Debate Topic", placeholder="e.g. Should social media have a minimum age?")
+    topic = st.text_input("Debate Topic", placeholder="Eg: School la uniform kandippa venuma?")
     col1, col2 = st.columns(2)
     with col1:
-        argument_a = st.text_area("Argument A", height=150)
+        argument_a = st.text_area("Argument A", placeholder="Unga argument Tanglish or English la type pannunga...", height=150)
     with col2:
-        argument_b = st.text_area("Argument B", height=150)
+        argument_b = st.text_area("Argument B", placeholder="Type your argument in Tanglish or English...", height=150)
     submitted = st.form_submit_button("🔍 Find the Fallacies")
 
 
