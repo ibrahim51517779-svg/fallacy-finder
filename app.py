@@ -1,5 +1,5 @@
 import streamlit as st
-import google.generativeai as genai
+from google import genai
 import os
 import json
 import time
@@ -21,8 +21,17 @@ st.set_page_config(
 
 # ---------------- AI ----------------
 
-genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-model = genai.GenerativeModel("gemini-3.6-flash")
+# Streamlit Cloud secrets first, environment variable second.
+try:
+    API_KEY = st.secrets["GEMINI_API_KEY"]
+except Exception:
+    API_KEY = os.environ.get("GEMINI_API_KEY", "")
+
+if not API_KEY:
+    st.error("🔑 GEMINI_API_KEY is missing. Add it in Streamlit Cloud → Settings → Secrets.")
+    st.stop()
+
+client = genai.Client(api_key=API_KEY)
 
 
 def judge_arguments(topic, argument_a, argument_b):
@@ -75,16 +84,33 @@ Return ONLY valid JSON in this exact structure:
   "overall_reason": "text"
 }}
 """
-    response = model.generate_content(prompt)
-    raw = response.text.strip()
 
-    if raw.startswith(""):
-        pieces = raw.split("")
-        raw = pieces[1] if len(pieces) > 1 else raw
-        if raw.lstrip().startswith("json"):
-            raw = raw.lstrip()[4:].strip()
+    response = client.models.generate_content(
+        model="gemini-3.6-flash",
+        contents=prompt,
+    )
 
-    return json.loads(raw)
+    raw = (response.text or "").strip()
+
+    # Safely remove optional Markdown JSON fences.
+    if raw.startswith("```"):
+        lines = raw.splitlines()
+        if lines and lines[0].strip().startswith("```"):
+            lines = lines[1:]
+        if lines and lines[-1].strip() == "```":
+            lines = lines[:-1]
+        raw = "\n".join(lines).strip()
+
+    if not raw:
+        raise ValueError("Gemini returned an empty response.")
+
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise ValueError(
+            "Gemini returned text that was not valid JSON. "
+            f"Response preview: {raw[:300]}"
+        ) from exc
 
 
 # ---------------- Background image ----------------
