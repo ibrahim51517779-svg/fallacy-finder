@@ -80,7 +80,7 @@ bg_image = (
 )
 
 # -------------------- Premium CSS --------------------
-GLOBAL_CSS = f"""
+GLOBAL_CSS = """
 <style>
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap');
@@ -148,7 +148,7 @@ footer {{
     height: 116%;
     background-image:
         linear-gradient(rgba(5,3,13,.62), rgba(5,3,13,.82)),
-        {bg_image};
+        __BG_IMAGE__;
     background-size: cover;
     background-position: center;
     filter: saturate(1.15);
@@ -957,6 +957,7 @@ label[data-testid="stWidgetLabel"] p {{
 </style>
 """
 
+GLOBAL_CSS = GLOBAL_CSS.replace("__BG_IMAGE__", bg_image)
 st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
 
 # -------------------- Ambient HTML --------------------
@@ -1231,6 +1232,3 @@ if submitted:
         '<div class="footer">🔍 FALLACY FINDER · HACK TITANS · AI DEBATE INTELLIGENCE</div>',
         unsafe_allow_html=True,
     )
-
-
-
