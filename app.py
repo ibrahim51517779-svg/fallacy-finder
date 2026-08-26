@@ -5,11 +5,10 @@ import json
 import time
 import base64
 import html
-import streamlit.components.v1 as components
 
 # =========================================================
-# FALLACY FINDER — HACK TITANS
-# Premium cinematic Streamlit UI
+# ⚡ FALLACY FINDER — HACK TITANS
+# Futuristic AI Debate Arena UI
 # =========================================================
 
 st.set_page_config(
@@ -19,80 +18,52 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# ---------------- AI ----------------
-
+# -------------------- AI --------------------
 genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 model = genai.GenerativeModel("gemini-3.6-flash")
 
 
 def judge_arguments(topic, argument_a, argument_b):
-    prompt = f"""
-You are an impartial debate judge and logical fallacy expert.
-
-The topic and arguments may be written in Tanglish (Tamil written in English/Roman
-letters, often mixed with English). Understand Tanglish naturally.
-
-Topic:
-{topic}
-
-Argument A:
-{argument_a}
-
-Argument B:
-{argument_b}
-
-Judge only the reasoning and evidence in the text itself.
-
-Score both arguments from 0-10 for:
-1. logic
-2. evidence
-3. persuasiveness
-
-Also identify logical fallacies in each argument.
-If there are none, return an empty list.
-
-Write reason and overall_reason in simple Tanglish.
-Keep fallacy names in English.
-
-Return ONLY valid JSON:
-
-{{
-  "argument_a": {{
-    "logic": 0,
-    "evidence": 0,
-    "persuasiveness": 0,
-    "reason": "text",
-    "fallacies": []
-  }},
-  "argument_b": {{
-    "logic": 0,
-    "evidence": 0,
-    "persuasiveness": 0,
-    "reason": "text",
-    "fallacies": []
-  }},
-  "winner": "A or B",
-  "overall_reason": "text"
-}}
-"""
+    prompt = (
+        "You are an impartial debate judge and logical fallacy expert.\n\n"
+        "The topic and arguments may be written in Tanglish (Tamil words spelled out "
+        "in English/Roman letters, often mixed with English words). Understand Tanglish "
+        "input naturally, the same way a bilingual Tamil-English speaker would, and judge "
+        "it fairly regardless of language mixing or spelling variations.\n\n"
+        f"Topic: {topic}\n\n"
+        f"Argument A: {argument_a}\n\n"
+        f"Argument B: {argument_b}\n\n"
+        "Judge only the strength of reasoning and evidence in the text itself. "
+        "Do not favor either side based on argument length, order, or writing style alone.\n\n"
+        "Evaluate both arguments on: logic, evidence, and persuasiveness (each scored 0-10). "
+        "Also identify any logical fallacies present in each argument. If none are present, return an empty list.\n\n"
+        "Write the 'reason' and 'overall_reason' fields in simple Tanglish (Tamil mixed with "
+        "English, written in English letters) so a Tamil speaker finds it natural and easy "
+        "to read. Keep fallacy names themselves in English.\n\n"
+        "Respond ONLY with valid JSON in exactly this format:\n\n"
+        "{\n"
+        '  "argument_a": {"logic": 0, "evidence": 0, "persuasiveness": 0, "reason": "text", "fallacies": []},\n'
+        '  "argument_b": {"logic": 0, "evidence": 0, "persuasiveness": 0, "reason": "text", "fallacies": []},\n'
+        '  "winner": "A or B",\n'
+        '  "overall_reason": "text"\n'
+        "}"
+    )
 
     response = model.generate_content(prompt)
-    raw = response.text.strip()
+    text = response.text.strip()
 
-    if raw.startswith("```"):
-        parts = raw.split("```")
-        raw = parts[1] if len(parts) > 1 else raw
-        if raw.startswith("json"):
-            raw = raw[4:]
+    if text.startswith("```"):
+        parts = text.split("```")
+        text = parts[1] if len(parts) > 1 else text
+        if text.startswith("json"):
+            text = text[4:]
 
-    return json.loads(raw)
+    return json.loads(text)
 
 
-# ---------------- Background image ----------------
-
+# -------------------- Background --------------------
 @st.cache_data
-def load_background():
-    path = "assets/background.jpg"
+def get_base64_bg(path):
     try:
         with open(path, "rb") as f:
             return base64.b64encode(f.read()).decode()
@@ -100,811 +71,886 @@ def load_background():
         return ""
 
 
-BG = load_background()
+bg_base64 = get_base64_bg("assets/background.jpg")
 
-background_rule = (
-    f'background-image:linear-gradient(rgba(4,3,12,.55),rgba(4,3,12,.88)),'
-    f'url("data:image/jpg;base64,{BG}");'
-    if BG
+bg_image = (
+    f'background-image:url("data:image/jpg;base64,{bg_base64}");'
+    if bg_base64
     else ""
 )
 
-
-# ---------------- Premium CSS ----------------
-
-CSS = r"""
+# -------------------- Premium CSS --------------------
+GLOBAL_CSS = f"""
 <style>
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap');
 
-:root{
-    --bg:#04030b;
-    --panel:rgba(10,8,23,.74);
-    --panel2:rgba(17,11,34,.82);
-    --purple:#9b5cff;
-    --pink:#f45bb8;
-    --cyan:#36d9ff;
-    --gold:#ffd75a;
-    --green:#4ade80;
-    --text:#f8fafc;
-    --muted:#8e889d;
-}
+:root {{
+    --bg: #05030d;
+    --panel: rgba(13, 10, 27, .72);
+    --panel-strong: rgba(16, 11, 33, .90);
+    --white: #f8fafc;
+    --muted: #a7a1bc;
+    --purple: #a855f7;
+    --pink: #f472b6;
+    --cyan: #22d3ee;
+    --gold: #facc15;
+    --green: #4ade80;
+    --red: #fb7185;
+}}
 
-*{box-sizing:border-box}
-html,body,[class*="css"]{font-family:Inter,sans-serif}
-.stApp{
-    min-height:100vh;
+* {{
+    box-sizing: border-box;
+}}
+
+html, body, [class*="css"] {{
+    font-family: 'Inter', sans-serif;
+}}
+
+.stApp {{
     background:
-        radial-gradient(circle at 18% 12%,rgba(155,92,255,.16),transparent 28%),
-        radial-gradient(circle at 84% 28%,rgba(54,217,255,.10),transparent 25%),
-        radial-gradient(circle at 50% 100%,rgba(244,91,184,.10),transparent 32%),
-        var(--bg);
-    color:var(--text);
-}
-header[data-testid="stHeader"]{background:transparent!important}
-footer{visibility:hidden}
-#MainMenu{visibility:hidden}
-.main .block-container{max-width:1250px;padding:1.5rem 1.5rem 4rem}
+        radial-gradient(circle at 15% 15%, rgba(168,85,247,.15), transparent 28%),
+        radial-gradient(circle at 85% 25%, rgba(34,211,238,.10), transparent 25%),
+        radial-gradient(circle at 50% 90%, rgba(244,114,182,.10), transparent 30%),
+        #05030d;
+    color: var(--white);
+}}
 
-body:before{
-    content:"";
-    position:fixed;inset:0;pointer-events:none;z-index:40;
+header[data-testid="stHeader"] {{
+    background: transparent !important;
+}}
+
+[data-testid="stAppViewContainer"] {{
+    background: transparent;
+}}
+
+.main .block-container {{
+    max-width: 1250px;
+    padding: 2rem 2rem 5rem;
+    position: relative;
+    z-index: 2;
+}}
+
+footer {{
+    visibility: hidden;
+}}
+
+#MainMenu {{
+    visibility: hidden;
+}}
+
+/* ---------- Ambient background ---------- */
+
+.bg-layer {{
+    position: fixed;
+    inset: -8%;
+    width: 116%;
+    height: 116%;
+    background-image:
+        linear-gradient(rgba(5,3,13,.62), rgba(5,3,13,.82)),
+        {bg_image};
+    background-size: cover;
+    background-position: center;
+    filter: saturate(1.15);
+    animation: kenBurns 25s ease-in-out infinite;
+    z-index: -5;
+}}
+
+.aurora {{
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: -4;
+}}
+
+.orb {{
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: .20;
+    animation: drift 18s ease-in-out infinite alternate;
+}}
+
+.orb.one {{
+    width: 360px; height: 360px;
+    background: var(--purple);
+    left: -100px; top: 5%;
+}}
+
+.orb.two {{
+    width: 300px; height: 300px;
+    background: var(--cyan);
+    right: -80px; top: 25%;
+    animation-delay: -6s;
+}}
+
+.orb.three {{
+    width: 320px; height: 320px;
+    background: var(--pink);
+    left: 38%; bottom: -140px;
+    animation-delay: -11s;
+}}
+
+.grid {{
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -3;
+    opacity: .13;
+    background-image:
+        linear-gradient(rgba(168,85,247,.18) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(168,85,247,.18) 1px, transparent 1px);
+    background-size: 55px 55px;
+    mask-image: linear-gradient(to bottom, black, transparent 88%);
+}}
+
+@keyframes kenBurns {{
+    0%,100% {{ transform: scale(1); }}
+    50% {{ transform: scale(1.08) translate(-1%, -1%); }}
+}}
+
+@keyframes drift {{
+    from {{ transform: translate3d(0,0,0) scale(1); }}
+    to {{ transform: translate3d(70px,-45px,0) scale(1.18); }}
+}}
+
+@keyframes pulse {{
+    0%,100% {{ opacity: .55; transform: scale(.95); }}
+    50% {{ opacity: 1; transform: scale(1.08); }}
+}}
+
+@keyframes shimmer {{
+    0% {{ background-position: -300% 0; }}
+    100% {{ background-position: 300% 0; }}
+}}
+
+@keyframes float {{
+    0%,100% {{ transform: translateY(0) rotate(0deg); }}
+    50% {{ transform: translateY(-18px) rotate(5deg); }}
+}}
+
+@keyframes scan {{
+    0% {{ transform: translateY(-150%); opacity: 0; }}
+    15%,85% {{ opacity: 1; }}
+    100% {{ transform: translateY(150%); opacity: 0; }}
+}}
+
+@keyframes bar {{
+    from {{ width: 0; }}
+}}
+
+@keyframes winner {{
+    0% {{ opacity: 0; transform: translateY(25px) scale(.92); }}
+    70% {{ transform: translateY(-4px) scale(1.02); }}
+    100% {{ opacity: 1; transform: translateY(0) scale(1); }}
+}}
+
+/* ---------- Hero ---------- */
+
+.hero {{
+    text-align: center;
+    padding: 3rem 1rem 2rem;
+}}
+
+.hero-kicker {{
+    display: inline-flex;
+    align-items: center;
+    gap: .55rem;
+    padding: .55rem 1rem;
+    border-radius: 999px;
+    border: 1px solid rgba(168,85,247,.35);
+    background: rgba(168,85,247,.08);
+    color: #ddd6fe;
+    font-size: .76rem;
+    font-weight: 800;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    box-shadow: 0 0 30px rgba(168,85,247,.12);
+}}
+
+.hero-title {{
+    margin: 1.1rem 0 .35rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(3rem, 7vw, 6.5rem);
+    line-height: .92;
+    font-weight: 900;
+    letter-spacing: -.065em;
+    background: linear-gradient(110deg, #fff 0%, #ddd6fe 25%, #f472b6 52%, #a855f7 76%, #22d3ee 100%);
+    background-size: 250% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmer 7s linear infinite;
+}}
+
+.hero-sub {{
+    color: #aaa3bd;
+    font-size: 1rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}}
+
+.hero-line {{
+    width: 180px;
+    height: 2px;
+    margin: 1.35rem auto;
+    background: linear-gradient(90deg, transparent, var(--purple), var(--cyan), transparent);
+    box-shadow: 0 0 18px rgba(168,85,247,.7);
+}}
+
+/* ---------- Section headers ---------- */
+
+.section-label {{
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    margin: 1.6rem 0 .8rem;
+    color: #ddd6fe;
+    font-size: .74rem;
+    font-weight: 900;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+}}
+
+.section-label::after {{
+    content: "";
+    height: 1px;
+    flex: 1;
+    background: linear-gradient(90deg, rgba(168,85,247,.4), transparent);
+}}
+
+/* ---------- Glass cards ---------- */
+
+.glass {{
+    position: relative;
+    background: linear-gradient(145deg, rgba(22,17,40,.82), rgba(8,7,18,.70));
+    border: 1px solid rgba(255,255,255,.10);
+    border-radius: 26px;
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.40),
+        inset 0 1px 0 rgba(255,255,255,.06);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}}
+
+.glass::before {{
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(168,85,247,.35), transparent 35%, transparent 65%, rgba(34,211,238,.18));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}}
+
+.topic-card {{
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}}
+
+.card-title {{
+    font-weight: 800;
+    font-size: 1rem;
+    color: #fff;
+    margin-bottom: .25rem;
+}}
+
+.card-sub {{
+    color: #888198;
+    font-size: .78rem;
+}}
+
+/* ---------- Streamlit inputs ---------- */
+
+.stTextInput > div > div,
+.stTextArea > div > div {{
+    background: rgba(255,255,255,.035) !important;
+    border: 1px solid rgba(255,255,255,.10) !important;
+    border-radius: 16px !important;
+    transition: .25s ease;
+}}
+
+.stTextInput > div > div:focus-within,
+.stTextArea > div > div:focus-within {{
+    border-color: rgba(168,85,247,.75) !important;
+    box-shadow:
+        0 0 0 3px rgba(168,85,247,.10),
+        0 0 35px rgba(168,85,247,.13) !important;
+    transform: translateY(-1px);
+}}
+
+.stTextInput input,
+.stTextArea textarea {{
+    color: #fff !important;
+    background: transparent !important;
+}}
+
+.stTextInput input::placeholder,
+.stTextArea textarea::placeholder {{
+    color: #625c70 !important;
+}}
+
+label[data-testid="stWidgetLabel"] p {{
+    color: #c4b5fd !important;
+    font-weight: 700 !important;
+    font-size: .78rem !important;
+}}
+
+.stTextArea textarea {{
+    min-height: 155px;
+}}
+
+/* ---------- Buttons ---------- */
+
+.stButton > button,
+.stFormSubmitButton > button {{
+    width: 100%;
+    min-height: 52px;
+    border: 0 !important;
+    border-radius: 15px !important;
+    color: white !important;
+    font-weight: 900 !important;
+    letter-spacing: .04em;
+    background: linear-gradient(100deg, #7c3aed, #a855f7, #ec4899, #7c3aed) !important;
+    background-size: 250% 100% !important;
+    box-shadow:
+        0 12px 35px rgba(168,85,247,.28),
+        inset 0 1px 0 rgba(255,255,255,.18);
+    transition: .25s ease !important;
+}}
+
+.stButton > button:hover,
+.stFormSubmitButton > button:hover {{
+    transform: translateY(-3px) scale(1.01);
+    background-position: 100% 0 !important;
+    box-shadow:
+        0 18px 45px rgba(168,85,247,.42),
+        0 0 30px rgba(236,72,153,.15);
+}}
+
+.stButton > button:active,
+.stFormSubmitButton > button:active {{
+    transform: translateY(0) scale(.99);
+}}
+
+/* ---------- Argument headers ---------- */
+
+.arg-header {{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: .7rem;
+}}
+
+.arg-pill {{
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .45rem .7rem;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: .73rem;
+    letter-spacing: .08em;
+}}
+
+.arg-a {{
+    background: rgba(34,211,238,.08);
+    border: 1px solid rgba(34,211,238,.30);
+    color: #67e8f9;
+}}
+
+.arg-b {{
+    background: rgba(168,85,247,.10);
+    border: 1px solid rgba(168,85,247,.32);
+    color: #d8b4fe;
+}}
+
+/* ---------- Scanner ---------- */
+
+.scanner {{
+    position: relative;
+    overflow: hidden;
+    margin: 1.8rem 0;
+    padding: 2.5rem 1rem;
+    text-align: center;
+    border-radius: 26px;
+    background: rgba(8,7,18,.72);
+    border: 1px solid rgba(168,85,247,.25);
+    box-shadow: 0 20px 60px rgba(0,0,0,.35);
+}}
+
+.scanner::after {{
+    content: "";
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    top: 0;
+    background: linear-gradient(90deg, transparent, var(--cyan), var(--purple), transparent);
+    box-shadow: 0 0 22px rgba(34,211,238,.8);
+    animation: scan 2.2s ease-in-out infinite;
+}}
+
+.scanner-icon {{
+    font-size: 3.2rem;
+    display: inline-block;
+    animation: pulse 1.5s ease-in-out infinite;
+}}
+
+.scanner-title {{
+    margin-top: .7rem;
+    color: #fff;
+    font-weight: 900;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}}
+
+.scanner-sub {{
+    color: #81798e;
+    font-size: .82rem;
+    margin-top: .35rem;
+}}
+
+/* ---------- Scoreboard ---------- */
+
+.scoreboard {{
+    padding: 1.8rem;
+    margin-top: 1rem;
+    animation: winner .6s ease-out;
+}}
+
+.vs-grid {{
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1rem;
+    align-items: center;
+}}
+
+.score-side {{
+    text-align: center;
+    padding: 1rem;
+}}
+
+.score-name {{
+    color: #c4b5fd;
+    font-weight: 800;
+    letter-spacing: .06em;
+    font-size: .82rem;
+}}
+
+.score-number {{
+    margin: .35rem 0;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 900;
+    line-height: 1;
+    background: linear-gradient(135deg, #fff, #c4b5fd, #f472b6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}}
+
+.score-max {{
+    color: #666074;
+    font-size: .7rem;
+    text-transform: uppercase;
+    letter-spacing: .15em;
+}}
+
+.vs {{
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: #facc15;
+    font-weight: 1000;
+    font-size: .8rem;
+    border: 1px solid rgba(250,204,21,.35);
+    background: rgba(250,204,21,.07);
+    box-shadow: 0 0 25px rgba(250,204,21,.12);
+}}
+
+.metric {{
+    margin-top: 1.35rem;
+}}
+
+.metric-top {{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: .45rem;
+    color: #9f97ad;
+    font-size: .74rem;
+    font-weight: 700;
+    letter-spacing: .07em;
+}}
+
+.metric-values {{
+    color: #fff;
+    font-weight: 900;
+}}
+
+.metric-track {{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+}}
+
+.track {{
+    height: 10px;
+    overflow: hidden;
+    background: rgba(255,255,255,.055);
+    border-radius: 999px;
+}}
+
+.fill-a {{
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--cyan), var(--purple));
+    box-shadow: 0 0 15px rgba(168,85,247,.55);
+    animation: bar 1s ease-out;
+}}
+
+.fill-b {{
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--purple), var(--pink));
+    box-shadow: 0 0 15px rgba(244,114,182,.45);
+    animation: bar 1s ease-out;
+}}
+
+/* ---------- Reason cards ---------- */
+
+.reason-card {{
+    height: 100%;
+    padding: 1.4rem;
+    border-radius: 22px;
+    background: rgba(13,10,27,.72);
+    border: 1px solid rgba(255,255,255,.09);
+    box-shadow: 0 15px 45px rgba(0,0,0,.25);
+}}
+
+.reason-head {{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}}
+
+.reason-title {{
+    font-weight: 900;
+    color: #fff;
+}}
+
+.reason-icon {{
+    font-size: 1.4rem;
+}}
+
+.reason-text {{
+    color: #b5aec1;
+    line-height: 1.7;
+    font-size: .88rem;
+}}
+
+.tag {{
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    margin: .8rem .35rem 0 0;
+    padding: .42rem .65rem;
+    border-radius: 999px;
+    color: #fda4af;
+    background: rgba(251,113,133,.08);
+    border: 1px solid rgba(251,113,133,.28);
+    font-size: .68rem;
+    font-weight: 900;
+    letter-spacing: .04em;
+}}
+
+.clean {{
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    margin-top: .9rem;
+    color: #86efac;
+    font-size: .75rem;
+    font-weight: 800;
+}}
+
+/* ---------- Winner ---------- */
+
+.winner {{
+    position: relative;
+    overflow: hidden;
+    margin-top: 1.4rem;
+    padding: 2.2rem 1.5rem;
+    text-align: center;
+    border-radius: 28px;
     background:
-      repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 5px);
-    opacity:.11;
-}
-body:after{
-    content:"";
-    position:fixed;inset:0;pointer-events:none;z-index:41;
-    background:
-      radial-gradient(circle at 20% 30%,rgba(255,255,255,.22) 0 1px,transparent 2px),
-      radial-gradient(circle at 70% 18%,rgba(255,255,255,.18) 0 1px,transparent 2px),
-      radial-gradient(circle at 82% 75%,rgba(255,255,255,.15) 0 1px,transparent 2px);
-    background-size:170px 170px,230px 230px,280px 280px;
-    opacity:.13;
-    animation:stars 22s linear infinite;
-}
-@keyframes stars{
-    from{transform:translate(0,0)}
-    to{transform:translate(-35px,25px)}
-}
+        radial-gradient(circle at 50% 0%, rgba(250,204,21,.15), transparent 50%),
+        rgba(30,20,10,.72);
+    border: 1px solid rgba(250,204,21,.35);
+    box-shadow:
+        0 25px 70px rgba(250,204,21,.10),
+        inset 0 1px 0 rgba(255,255,255,.06);
+    animation: winner .7s ease-out;
+}}
 
-.bg{
-    position:fixed;inset:-6%;z-index:-10;
-    background-size:cover;background-position:center;
-    __BACKGROUND__;
-    filter:saturate(1.12);
-    animation:bgMove 24s ease-in-out infinite alternate;
-}
-@keyframes bgMove{
-    from{transform:scale(1)}
-    to{transform:scale(1.08) translate(-1%,-1%)}
-}
+.winner::before,
+.winner::after {{
+    content: "✦";
+    position: absolute;
+    color: #facc15;
+    font-size: 1.4rem;
+    animation: float 2.5s ease-in-out infinite;
+}}
 
-.aurora{
-    position:fixed;inset:0;z-index:-9;pointer-events:none;overflow:hidden;
-}
-.aurora span{
-    position:absolute;border-radius:50%;filter:blur(90px);opacity:.18;
-    animation:orb 15s ease-in-out infinite alternate;
-}
-.a1{width:420px;height:420px;background:#8b5cf6;left:-100px;top:5%}
-.a2{width:350px;height:350px;background:#22d3ee;right:-80px;top:20%;animation-delay:-5s!important}
-.a3{width:360px;height:360px;background:#ec4899;left:40%;bottom:-180px;animation-delay:-9s!important}
-@keyframes orb{
-    from{transform:translate(0,0) scale(.9)}
-    to{transform:translate(60px,-40px) scale(1.14)}
-}
+.winner::before {{ left: 12%; top: 25%; }}
+.winner::after {{ right: 12%; top: 45%; animation-delay: -.8s; }}
 
-/* ---------- intro ---------- */
+.crown {{
+    font-size: 3.2rem;
+    display: block;
+    animation: pulse 1.5s ease-in-out infinite;
+}}
 
-.intro{
-    min-height:78vh;
-    position:relative;
-    overflow:hidden;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:2rem;
-    border-radius:34px;
-    background:
-      radial-gradient(circle at 50% 34%,rgba(155,92,255,.22),transparent 32%),
-      linear-gradient(160deg,rgba(15,9,32,.94),rgba(3,2,9,.82));
-    border:1px solid rgba(255,255,255,.10);
-    box-shadow:0 45px 120px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.06);
-}
-.intro:before{
-    content:"";
-    position:absolute;inset:20px;border-radius:26px;
-    border:1px solid rgba(155,92,255,.22);
-    pointer-events:none;
-}
-.intro:after{
-    content:"";
-    position:absolute;inset:0;pointer-events:none;
-    background:
-      linear-gradient(90deg,transparent 49.5%,rgba(155,92,255,.05) 50%,transparent 50.5%),
-      linear-gradient(transparent 49.5%,rgba(54,217,255,.04) 50%,transparent 50.5%);
-    background-size:84px 84px;
-    mask-image:radial-gradient(circle at center,#000 0%,transparent 78%);
-}
-.intro-content{position:relative;z-index:2;text-align:center;max-width:900px;width:100%}
-.pill{
-    display:inline-flex;gap:.55rem;align-items:center;
-    padding:.55rem .95rem;border-radius:999px;
-    background:rgba(155,92,255,.08);
-    border:1px solid rgba(155,92,255,.30);
-    color:#dfccff;font-size:.68rem;font-weight:900;letter-spacing:.18em;
-    text-transform:uppercase;
-    animation:rise .8s both;
-}
-.team{
-    margin-top:1.2rem;font-family:'Space Grotesk',sans-serif;
-    color:#fff;font-size:1rem;font-weight:900;letter-spacing:.42em;
-    padding-left:.42em;
-    text-shadow:0 0 30px rgba(155,92,255,.5);
-    animation:rise .9s .08s both;
-}
-.title{
-    margin:.9rem 0 .55rem;
-    font-family:'Space Grotesk',sans-serif;
-    font-size:clamp(4rem,10vw,8rem);
-    line-height:.84;font-weight:900;letter-spacing:-.07em;
-    background:linear-gradient(110deg,#fff,#d8b4fe,#f472b6,#60e5ff,#fff);
-    background-size:250% auto;
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-    animation:rise 1s .16s both,shine 6s linear infinite;
-}
-@keyframes shine{to{background-position:250%}}
-.subtitle{
-    color:#b4adc0;font-size:.78rem;font-weight:800;
-    letter-spacing:.24em;text-transform:uppercase;
-    animation:rise 1s .24s both;
-}
-.desc{
-    max-width:620px;margin:1rem auto 0;color:#777083;
-    font-size:.88rem;line-height:1.75;animation:rise 1s .32s both;
-}
-@keyframes rise{
-    from{opacity:0;transform:translateY(24px) scale(.98)}
-    to{opacity:1;transform:none}
-}
-.glow-line{
-    width:230px;height:2px;margin:1.4rem auto;
-    background:linear-gradient(90deg,transparent,#9b5cff,#36d9ff,transparent);
-    box-shadow:0 0 22px rgba(155,92,255,.7);
-    animation:pulse 2.5s infinite;
-}
-@keyframes pulse{0%,100%{opacity:.45;transform:scaleX(.8)}50%{opacity:1;transform:scaleX(1)}}
+.winner-title {{
+    margin-top: .5rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #facc15;
+    letter-spacing: .08em;
+}}
 
-.feature-row{
-    display:flex;justify-content:center;gap:.7rem;flex-wrap:wrap;margin:1.35rem 0 1.7rem;
-    animation:rise 1s .4s both;
-}
-.feature{
-    min-width:130px;padding:.75rem .9rem;border-radius:16px;
-    background:rgba(255,255,255,.025);
-    border:1px solid rgba(255,255,255,.08);
-}
-.feature b{display:block;font-size:.85rem;color:#fff}
-.feature span{display:block;margin-top:.18rem;color:#676071;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase}
-.spark{
-    position:absolute;color:#fff;opacity:.5;font-size:.8rem;z-index:2;
-    animation:float 3.5s ease-in-out infinite;
-}
-.s1{left:13%;top:25%}.s2{right:15%;top:27%;animation-delay:-1s}.s3{left:18%;bottom:21%;animation-delay:-2s}.s4{right:17%;bottom:24%;animation-delay:-.4s}
-@keyframes float{50%{transform:translateY(-16px) rotate(8deg);opacity:.9}}
+.winner-reason {{
+    max-width: 750px;
+    margin: .65rem auto 0;
+    color: #c9c0ce;
+    line-height: 1.65;
+    font-size: .88rem;
+}}
 
+/* ---------- Footer ---------- */
 
-.title span{
-    background:linear-gradient(100deg,#f472b6,#a855f7,#22d3ee,#ffffff,#f472b6);
-    background-size:250% auto;
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-}
+.footer {{
+    text-align: center;
+    color: #514b5d;
+    font-size: .7rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-top: 3rem;
+}}
 
-/* ---------- main ---------- */
+@media (max-width: 700px) {{
+    .main .block-container {{ padding: 1rem; }}
+    .hero {{ padding-top: 1.5rem; }}
+    .hero-title {{ font-size: 3.2rem; }}
+    .vs-grid {{ grid-template-columns: 1fr; }}
+    .vs {{ margin: 0 auto; }}
+    .score-number {{ font-size: 2.8rem; }}
+}}
 
-.brandbar{
-    width:max-content;margin:.25rem auto 1.1rem;
-    padding:.52rem .9rem;border-radius:999px;
-    border:1px solid rgba(255,255,255,.08);
-    background:rgba(7,5,17,.62);
-    box-shadow:0 0 35px rgba(155,92,255,.10);
-    display:flex;align-items:center;gap:.55rem;
-}
-.brandbar i{
-    width:7px;height:7px;border-radius:50%;
-    background:#4ade80;box-shadow:0 0 12px rgba(74,222,128,.8)
-}
-.brandbar b{
-    font-family:'Space Grotesk',sans-serif;letter-spacing:.28em;
-    padding-left:.28em;font-size:.74rem;
-}
-.brandbar small{color:#5f586b;letter-spacing:.12em}
-
-.main-title{
-    text-align:center;font-family:'Space Grotesk',sans-serif;
-    font-size:clamp(2.7rem,5vw,4.8rem);font-weight:900;line-height:.95;
-    letter-spacing:-.05em;
-    background:linear-gradient(110deg,#fff,#d8b4fe,#f472b6,#67e8f9);
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-}
-.main-sub{text-align:center;color:#777083;margin:.6rem auto 1.5rem;font-size:.82rem;letter-spacing:.15em;text-transform:uppercase}
-
-.card{
-    position:relative;padding:1.45rem;border-radius:26px;
-    background:
-      radial-gradient(circle at 15% 0%,rgba(155,92,255,.07),transparent 24%),
-      rgba(9,7,20,.72);
-    border:1px solid rgba(255,255,255,.09);
-    box-shadow:0 25px 75px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.05);
-    backdrop-filter:blur(18px);
-}
-.section{
-    color:#c9b6e9;font-weight:900;font-size:.68rem;
-    letter-spacing:.19em;text-transform:uppercase;
-    margin:1.2rem 0 .75rem;
-}
-.stTextInput>div>div,.stTextArea>div>div{
-    background:rgba(255,255,255,.025)!important;
-    border:1px solid rgba(255,255,255,.09)!important;
-    border-radius:15px!important;
-}
-.stTextInput>div>div:focus-within,.stTextArea>div>div:focus-within{
-    border-color:rgba(155,92,255,.75)!important;
-    box-shadow:0 0 0 3px rgba(155,92,255,.10),0 0 28px rgba(155,92,255,.12)!important;
-}
-.stTextInput input,.stTextArea textarea{color:#fff!important;background:transparent!important}
-.stTextInput input::placeholder,.stTextArea textarea::placeholder{color:#5f5968!important}
-label[data-testid="stWidgetLabel"] p{color:#c4b5fd!important;font-weight:800!important;font-size:.74rem!important}
-
-.argtag{
-    display:inline-flex;align-items:center;gap:.45rem;
-    border-radius:999px;padding:.43rem .7rem;font-size:.68rem;font-weight:900;
-    letter-spacing:.08em;margin-bottom:.55rem;
-}
-.a{color:#67e8f9;border:1px solid rgba(54,217,255,.28);background:rgba(54,217,255,.07)}
-.b{color:#e9b9ff;border:1px solid rgba(155,92,255,.30);background:rgba(155,92,255,.08)}
-
-.stButton>button,.stFormSubmitButton>button{
-    width:100%;min-height:54px;border:0!important;border-radius:16px!important;
-    color:#fff!important;font-weight:900!important;letter-spacing:.06em;
-    background:linear-gradient(100deg,#6633d7,#9b5cff,#f45bb8,#6633d7)!important;
-    background-size:250% 100%!important;
-    box-shadow:0 14px 40px rgba(155,92,255,.28),inset 0 1px 0 rgba(255,255,255,.20);
-    transition:.25s!important;
-}
-.stButton>button:hover,.stFormSubmitButton>button:hover{
-    transform:translateY(-3px);background-position:100% 0!important;
-    box-shadow:0 18px 48px rgba(155,92,255,.40);
-}
-
-.scan{
-    position:relative;overflow:hidden;text-align:center;margin:1.6rem 0;
-    padding:2.4rem 1rem;border-radius:25px;background:rgba(6,5,14,.82);
-    border:1px solid rgba(155,92,255,.22);
-}
-.scan:after{
-    content:"";position:absolute;left:8%;right:8%;top:0;height:2px;
-    background:linear-gradient(90deg,transparent,#36d9ff,#9b5cff,#f45bb8,transparent);
-    box-shadow:0 0 20px rgba(54,217,255,.8);animation:scan 2.2s ease-in-out infinite;
-}
-@keyframes scan{0%{transform:translateY(-120px);opacity:0}20%,80%{opacity:1}100%{transform:translateY(220px);opacity:0}}
-.scan-icon{font-size:3rem;animation:scanIcon 1.3s ease-in-out infinite}
-@keyframes scanIcon{50%{transform:scale(1.12);filter:drop-shadow(0 0 18px rgba(155,92,255,.65))}}
-.scan b{display:block;margin-top:.4rem;letter-spacing:.16em;font-size:.74rem}
-.scan small{color:#6c6574;font-size:.72rem}
-
-.result{
-    padding:1.6rem;border-radius:28px;background:
-      radial-gradient(circle at 50% 0%,rgba(155,92,255,.11),transparent 40%),
-      rgba(7,5,17,.78);
-    border:1px solid rgba(255,255,255,.09);
-    box-shadow:0 28px 90px rgba(0,0,0,.42);
-}
-.scores{
-    display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:center;text-align:center
-}
-.score-name{color:#c8bfda;font-weight:900;font-size:.76rem;letter-spacing:.12em}
-.score{
-    font-family:'Space Grotesk',sans-serif;font-size:3.25rem;font-weight:900;
-    margin:.2rem 0;background:linear-gradient(120deg,#fff,#d8b4fe,#f45bb8);
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-}
-.vs{
-    width:50px;height:50px;border-radius:50%;display:grid;place-items:center;
-    border:1px solid rgba(255,215,90,.32);color:#ffd75a;font-weight:900;
-    background:rgba(255,215,90,.06);box-shadow:0 0 25px rgba(255,215,90,.12)
-}
-.metric{margin-top:1rem}
-.metric-top{display:flex;justify-content:space-between;color:#82798d;font-size:.7rem;font-weight:800}
-.trackrow{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:.35rem}
-.track{height:9px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden}
-.fillA{height:100%;background:linear-gradient(90deg,#36d9ff,#9b5cff);border-radius:inherit;animation:bar 1s both}
-.fillB{height:100%;background:linear-gradient(90deg,#9b5cff,#f45bb8);border-radius:inherit;animation:bar 1s both}
-@keyframes bar{from{width:0}}
-
-.reason{
-    height:100%;padding:1.25rem;border-radius:21px;
-    background:rgba(10,8,22,.72);border:1px solid rgba(255,255,255,.08);
-}
-.reason h3{font-size:.9rem;margin:0 0 .8rem}
-.reason p{color:#aaa2b5!important;text-align:left!important;line-height:1.7;font-size:.82rem}
-.tag{display:inline-block;margin:.35rem .25rem 0 0;padding:.4rem .6rem;border-radius:999px;
-    color:#fda4af;background:rgba(244,91,119,.07);border:1px solid rgba(244,91,119,.25);
-    font-size:.65rem;font-weight:900}
-
-.winner{
-    position:relative;overflow:hidden;margin-top:1.4rem;padding:2.8rem 1.4rem 2.2rem;
-    text-align:center;border-radius:32px;
-    background:
-      radial-gradient(circle at 50% 15%,rgba(255,215,90,.23),transparent 35%),
-      radial-gradient(circle at 50% 100%,rgba(155,92,255,.10),transparent 45%),
-      rgba(29,20,9,.88);
-    border:1px solid rgba(255,215,90,.42);
-    box-shadow:0 25px 85px rgba(255,215,90,.12),inset 0 1px 0 rgba(255,255,255,.06);
-    animation:winnerIn .85s cubic-bezier(.2,.8,.2,1);
-}
-@keyframes winnerIn{from{opacity:0;transform:translateY(30px) scale(.9)}to{opacity:1;transform:none}}
-.winner:before{
-    content:"✦  ✧  ✦  ✧  ✦";
-    position:absolute;top:12px;left:0;right:0;color:rgba(255,215,90,.45);
-    font-size:.65rem;letter-spacing:1.05rem;
-}
-.crown{font-size:4rem;display:block;filter:drop-shadow(0 0 18px rgba(255,215,90,.55));animation:crown 2s ease-in-out infinite}
-@keyframes crown{50%{transform:translateY(-9px) rotate(2deg)}}
-.winner h2{margin:.45rem 0 0;font-family:'Space Grotesk',sans-serif;font-size:2rem;color:#ffd75a}
-.winner .pill2{display:inline-block;margin:.65rem 0;padding:.45rem .8rem;border-radius:999px;
-    color:#fff4c2;background:rgba(255,215,90,.08);border:1px solid rgba(255,215,90,.24);font-size:.68rem;font-weight:900}
-.winner p{max-width:760px;margin:0 auto;color:#bcb4c0!important;text-align:center!important;line-height:1.7}
-
-@media(max-width:700px){
-    .main .block-container{padding:1rem}
-    .scores{grid-template-columns:1fr}
-    .vs{margin:auto}
-    .intro{min-height:75vh;padding:1.2rem}
-}
 </style>
 """
 
-CSS = CSS.replace("__BACKGROUND__", background_rule)
-st.markdown(CSS, unsafe_allow_html=True)
+st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
+
+
+<style>
+/* ===== FULL-SCREEN ARENA ===== */
+html, body {
+    scroll-behavior: smooth !important;
+}
+
+.stApp {
+    min-height: 100vh !important;
+}
+
+.main .block-container {
+    min-height: 100vh;
+}
+
+/* The arena opens from the top instead of appearing below the intro. */
+.arena-page {
+    min-height: calc(100vh - 2rem);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Keep the hero compact so the actual arena fits much better on screen. */
+.arena-page .hero {
+    padding-top: 1rem !important;
+    padding-bottom: .8rem !important;
+}
+
+.arena-page .hero-title {
+    margin-top: .55rem !important;
+}
+
+.arena-page .hero-line {
+    margin: .8rem auto !important;
+}
+
+/* On normal desktop screens, keep the input arena inside one viewport. */
+@media (min-height: 760px) and (min-width: 900px) {
+    .arena-page .topic-card {
+        padding: 1.15rem !important;
+    }
+
+    .arena-page .stTextArea textarea {
+        min-height: 115px !important;
+    }
+
+    .arena-page .section-label {
+        margin-top: .8rem !important;
+        margin-bottom: .55rem !important;
+    }
+}
+
+/* Hide Streamlit's empty vertical gaps around elements. */
+div[data-testid="stVerticalBlock"] > div:has(> div.stMarkdown:empty) {
+    display: none;
+}
+</style>
+
+
+# -------------------- Ambient HTML --------------------
+st.markdown(
+    """
+    <div class="bg-layer"></div>
+    <div class="aurora">
+        <div class="orb one"></div>
+        <div class="orb two"></div>
+        <div class="orb three"></div>
+    </div>
+    <div class="grid"></div>
+    """,
+    unsafe_allow_html=True,
+)
+
 
 st.markdown(
     """
-    <div class="bg"></div>
-    <div class="aurora">
-        <span class="a1"></span>
-        <span class="a2"></span>
-        <span class="a3"></span>
+    <div class="fx-stars">
+        <span>✦</span><span>✧</span><span>✦</span><span>✧</span>
+        <span>✦</span><span>✧</span><span>✦</span><span>✧</span>
     </div>
     """,
     unsafe_allow_html=True,
 )
 
-# =========================================================
-# INTRO
-# =========================================================
-
+# -------------------- Intro screen --------------------
 if "entered" not in st.session_state:
     st.session_state.entered = False
 
 if not st.session_state.entered:
-    components.html(
+    st.markdown(
         """
-        <!doctype html>
-        <html>
-        <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <style>
-            *{box-sizing:border-box}
-            html,body{margin:0;width:100%;height:100%;overflow:hidden}
-            body{
-                font-family:Inter,Arial,sans-serif;
-                background:
-                    radial-gradient(circle at 50% 35%,rgba(155,92,255,.24),transparent 30%),
-                    radial-gradient(circle at 15% 75%,rgba(54,217,255,.10),transparent 24%),
-                    radial-gradient(circle at 88% 20%,rgba(244,91,184,.10),transparent 22%),
-                    linear-gradient(155deg,#100824,#04030b 72%);
-                color:#f8fafc;
-            }
-
-            body:before{
-                content:"";
-                position:fixed;inset:0;
-                background:
-                    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
-                    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
-                background-size:70px 70px;
-                mask-image:radial-gradient(circle at center,#000 10%,transparent 80%);
-            }
-
-            body:after{
-                content:"";
-                position:fixed;inset:0;
-                background:repeating-linear-gradient(
-                    0deg,
-                    rgba(255,255,255,.025) 0 1px,
-                    transparent 1px 5px
-                );
-                opacity:.55;
-                pointer-events:none;
-            }
-
-            .wrap{
-                position:relative;
-                width:100%;
-                height:100%;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-            }
-
-            .panel{
-                position:relative;
-                width:min(1080px,94vw);
-                min-height:88vh;
-                border:1px solid rgba(255,255,255,.10);
-                border-radius:34px;
-                overflow:hidden;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                background:
-                    radial-gradient(circle at 50% 35%,rgba(155,92,255,.15),transparent 35%),
-                    rgba(5,4,13,.78);
-                box-shadow:
-                    0 40px 110px rgba(0,0,0,.52),
-                    inset 0 1px 0 rgba(255,255,255,.06);
-                backdrop-filter:blur(18px);
-            }
-
-            .panel:before{
-                content:"";
-                position:absolute;
-                inset:18px;
-                border-radius:25px;
-                border:1px solid rgba(155,92,255,.18);
-            }
-
-            .corner{
-                position:absolute;
-                width:90px;height:90px;
-                border-color:rgba(54,217,255,.22);
-            }
-            .tl{left:28px;top:28px;border-left:2px solid;border-top:2px solid;border-radius:15px 0 0 0}
-            .tr{right:28px;top:28px;border-right:2px solid;border-top:2px solid;border-radius:0 15px 0 0}
-            .bl{left:28px;bottom:28px;border-left:2px solid;border-bottom:2px solid;border-radius:0 0 0 15px}
-            .br{right:28px;bottom:28px;border-right:2px solid;border-bottom:2px solid;border-radius:0 0 15px 0}
-
-            .orb{
-                position:absolute;
-                border-radius:50%;
-                filter:blur(70px);
-                opacity:.22;
-                animation:drift 12s ease-in-out infinite alternate;
-            }
-            .o1{width:260px;height:260px;background:#8b5cf6;left:-100px;top:-50px}
-            .o2{width:220px;height:220px;background:#22d3ee;right:-70px;bottom:-50px;animation-delay:-4s}
-            .o3{width:170px;height:170px;background:#ec4899;right:22%;top:10%;animation-delay:-7s}
-            @keyframes drift{
-                from{transform:translate(0,0) scale(.9)}
-                to{transform:translate(45px,-25px) scale(1.12)}
-            }
-
-            .content{
-                position:relative;
-                z-index:3;
-                text-align:center;
-                width:min(820px,86%);
-            }
-
-            .pill{
-                display:inline-block;
-                padding:9px 18px;
-                border-radius:999px;
-                border:1px solid rgba(155,92,255,.35);
-                background:rgba(155,92,255,.07);
-                color:#ddd6fe;
-                font-size:10px;
-                font-weight:900;
-                letter-spacing:3px;
-                text-transform:uppercase;
-                animation:rise .8s both;
-            }
-
-            .team{
-                margin-top:23px;
-                font-size:16px;
-                font-weight:900;
-                letter-spacing:10px;
-                padding-left:10px;
-                color:white;
-                text-shadow:0 0 30px rgba(155,92,255,.45);
-                animation:rise .9s .08s both;
-            }
-
-            .title{
-                margin-top:22px;
-                font-size:clamp(56px,11vw,118px);
-                line-height:.82;
-                font-weight:900;
-                letter-spacing:-7px;
-                background:linear-gradient(100deg,#fff,#ddd6fe,#a855f7,#f472b6,#22d3ee,#fff);
-                background-size:300% auto;
-                -webkit-background-clip:text;
-                -webkit-text-fill-color:transparent;
-                animation:rise 1s .15s both,shine 7s linear infinite;
-                filter:drop-shadow(0 0 32px rgba(155,92,255,.20));
-            }
-
-            @keyframes shine{
-                from{background-position:0% 50%}
-                to{background-position:300% 50%}
-            }
-
-            .sub{
-                margin-top:22px;
-                color:#b7afc2;
-                font-size:11px;
-                font-weight:800;
-                letter-spacing:5px;
-                text-transform:uppercase;
-                animation:rise 1s .24s both;
-            }
-
-            .line{
-                width:230px;
-                height:2px;
-                margin:24px auto;
-                background:linear-gradient(90deg,transparent,#22d3ee,#a855f7,#f472b6,transparent);
-                box-shadow:0 0 24px rgba(155,92,255,.65);
-                animation:pulse 2.5s ease-in-out infinite;
-            }
-
-            .desc{
-                max-width:620px;
-                margin:auto;
-                color:#81798b;
-                font-size:13px;
-                line-height:1.8;
-                animation:rise 1s .32s both;
-            }
-
-            .cards{
-                display:flex;
-                justify-content:center;
-                gap:12px;
-                flex-wrap:wrap;
-                margin-top:28px;
-                animation:rise 1s .4s both;
-            }
-
-            .card{
-                min-width:145px;
-                padding:14px 16px;
-                border-radius:17px;
-                background:rgba(255,255,255,.025);
-                border:1px solid rgba(255,255,255,.08);
-                box-shadow:0 12px 30px rgba(0,0,0,.25);
-            }
-
-            .card strong{
-                display:block;
-                color:white;
-                font-size:11px;
-                font-weight:900;
-            }
-
-            .card span{
-                display:block;
-                margin-top:5px;
-                color:#625b6d;
-                font-size:8px;
-                font-weight:800;
-                letter-spacing:2px;
-                text-transform:uppercase;
-            }
-
-            .status{
-                display:flex;
-                justify-content:center;
-                align-items:center;
-                gap:9px;
-                margin-top:25px;
-                color:#5c5568;
-                font-size:8px;
-                font-weight:900;
-                letter-spacing:2px;
-                text-transform:uppercase;
-                animation:rise 1s .48s both;
-            }
-
-            .dot{
-                width:7px;height:7px;border-radius:50%;
-                background:#4ade80;
-                box-shadow:0 0 10px #4ade80;
-                animation:beat 1.4s infinite;
-            }
-
-            @keyframes beat{
-                50%{transform:scale(1.4);opacity:.75}
-            }
-
-            @keyframes pulse{
-                0%,100%{opacity:.45;transform:scaleX(.8)}
-                50%{opacity:1;transform:scaleX(1)}
-            }
-
-            @keyframes rise{
-                from{opacity:0;transform:translateY(22px) scale(.98)}
-                to{opacity:1;transform:none}
-            }
-
-            .particle{
-                position:absolute;
-                color:#fff;
-                opacity:.45;
-                z-index:4;
-                animation:float 3.5s ease-in-out infinite;
-            }
-            .p1{left:12%;top:24%}.p2{right:13%;top:27%;animation-delay:-1s}
-            .p3{left:18%;bottom:23%;animation-delay:-2s}.p4{right:18%;bottom:20%;animation-delay:-.5s}
-            @keyframes float{
-                50%{transform:translateY(-16px) rotate(8deg);opacity:.9}
-            }
-        </style>
-        </head>
-        <body>
-            <div class="wrap">
-                <div class="panel">
-                    <div class="corner tl"></div>
-                    <div class="corner tr"></div>
-                    <div class="corner bl"></div>
-                    <div class="corner br"></div>
-
-                    <div class="orb o1"></div>
-                    <div class="orb o2"></div>
-                    <div class="orb o3"></div>
-
-                    <div class="particle p1">✦</div>
-                    <div class="particle p2">◇</div>
-                    <div class="particle p3">✧</div>
-                    <div class="particle p4">⚡</div>
-
-                    <div class="content">
-                        <div class="pill">⚡ HACK TITANS · AI DEBATE ARENA</div>
-                        <div class="team">HACK TITANS</div>
-
-                        <div class="title">FALLACY<br>FINDER</div>
-
-                        <div class="sub">
-                            🧠 AI-POWERED LOGIC INTELLIGENCE
-                        </div>
-
-                        <div class="line"></div>
-
-                        <div class="desc">
-                            Discover weak reasoning, expose hidden logical fallacies,
-                            compare two arguments and let AI choose the stronger case.
-                        </div>
-
-                        <div class="cards">
-                            <div class="card">
-                                <strong>🧠 AI JUDGE</strong>
-                                <span>Smart Analysis</span>
-                            </div>
-                            <div class="card">
-                                <strong>⚠️ FALLACY SCAN</strong>
-                                <span>Logic Detection</span>
-                            </div>
-                            <div class="card">
-                                <strong>🏆 AI VERDICT</strong>
-                                <span>Fair Decision</span>
-                            </div>
-                        </div>
-
-                        <div class="status">
-                            <span class="dot"></span>
-                            AI ENGINE READY
-                            <span>•</span>
-                            SYSTEM ONLINE
-                        </div>
-                    </div>
-                </div>
+        <div class="hero" style="padding-top:12vh;">
+            <div class="hero-kicker">⚡ HACK TITANS · AI INNOVATION</div>
+            <div class="hero-title">FALLACY<br>FINDER</div>
+            <div class="hero-sub">🧠 AI Debate Intelligence Arena</div>
+            <div class="hero-line"></div>
+            <div style="color:#81798e;max-width:560px;margin:auto;line-height:1.7;">
+                Detect weak reasoning. Expose logical fallacies.
+                Compare arguments. Let AI deliver the verdict.
             </div>
-        </body>
-        </html>
+        </div>
         """,
-        height=690,
-        scrolling=False,
+        unsafe_allow_html=True,
     )
 
     st.write("")
-    _, middle, _ = st.columns([1, 1.35, 1])
-    with middle:
-        if st.button(
-            "🚀  ENTER THE DEBATE ARENA",
-            use_container_width=True,
-            key="intro_enter_final",
-        ):
+    c1, c2, c3 = st.columns([1, 1.2, 1])
+    with c2:
+        if st.button("🚀  ENTER THE DEBATE ARENA", use_container_width=True):
             st.session_state.entered = True
             st.rerun()
 
     st.markdown(
-        '<div style="text-align:center;color:#555061;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;margin-top:1rem;">Tanglish + English supported</div>',
+        '<div class="footer">Built with 🧠 AI · ⚔️ Logic · 🏆 Competition</div>',
         unsafe_allow_html=True,
     )
+    st.stop()
 
-
-
-# =========================================================
-# MAIN APP
-# =========================================================
-
+# -------------------- Main hero --------------------
+st.markdown('<div class="arena-page">', unsafe_allow_html=True)
+st.markdown('<script>window.scrollTo({top:0,left:0,behavior:"instant"});document.documentElement.scrollTop=0;document.body.scrollTop=0;</script>', unsafe_allow_html=True)
 st.markdown(
     """
-    <div class="brandbar">
-        <i></i>
-        <b>HACK TITANS</b>
-        <small>AI DEBATE LAB</small>
+    <div class="hero">
+        <div class="hero-kicker"><span class="ai-status"><span class="ai-dot"></span> LIVE · AI REASONING ENGINE</span></div>
+        <div class="hero-title" style="font-size:clamp(2.8rem,5vw,5rem);">
+            🔍 FALLACY FINDER
+        </div>
+        <div class="hero-sub">AI-powered debate analysis · Tanglish + English</div>
+        <div class="hero-line"></div>
     </div>
-    <div class="main-title">🔍 FALLACY FINDER</div>
-    <div class="main-sub">AI-powered debate intelligence</div>
     """,
     unsafe_allow_html=True,
 )
 
-st.markdown('<div class="section">📝 Create your debate</div>', unsafe_allow_html=True)
+# -------------------- Input area --------------------
+st.markdown('<div class="section-label">📝 01 · BUILD YOUR DEBATE</div>', unsafe_allow_html=True)
 
-topic = st.text_input(
-    "Debate Topic",
-    placeholder="Example: School la uniform kandippa venuma?",
-    key="topic_input",
-)
+with st.container():
+    st.markdown('<div class="glass topic-card">', unsafe_allow_html=True)
 
-col1, col2 = st.columns(2, gap="large")
-
-with col1:
-    st.markdown('<div class="argtag a">🔵 SIDE A</div>', unsafe_allow_html=True)
-    argument_a = st.text_area(
-        "Argument A",
-        placeholder="Unga argument Tanglish or English la type pannunga...",
-        height=170,
-        label_visibility="collapsed",
-        key="argument_a_input",
+    topic = st.text_input(
+        "📝 DEBATE TOPIC",
+        placeholder="Example: School la uniform kandippa venuma?",
     )
 
-with col2:
-    st.markdown('<div class="argtag b">🟣 SIDE B</div>', unsafe_allow_html=True)
-    argument_b = st.text_area(
-        "Argument B",
-        placeholder="Counter argument Tanglish or English la type pannunga...",
-        height=170,
-        label_visibility="collapsed",
-        key="argument_b_input",
-    )
+    col1, col2 = st.columns(2, gap="large")
 
-st.write("")
-submitted = st.button(
-    "🚀  ANALYZE ARGUMENTS",
-    use_container_width=True,
-    key="analyze_button",
-)
+    with col1:
+        st.markdown(
+            '<div class="arg-header"><span class="arg-pill arg-a">🔵 ARGUMENT A</span><span style="color:#514b5d;font-size:.7rem;">SIDE A</span></div>',
+            unsafe_allow_html=True,
+        )
+        argument_a = st.text_area(
+            "Argument A",
+            placeholder="Unga argument Tanglish or English la type pannunga...",
+            height=170,
+            label_visibility="collapsed",
+        )
 
+    with col2:
+        st.markdown(
+            '<div class="arg-header"><span class="arg-pill arg-b">🟣 ARGUMENT B</span><span style="color:#514b5d;font-size:.7rem;">SIDE B</span></div>',
+            unsafe_allow_html=True,
+        )
+        argument_b = st.text_area(
+            "Argument B",
+            placeholder="Type your counter argument in Tanglish or English...",
+            height=170,
+            label_visibility="collapsed",
+        )
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    st.write("")
+    submitted = st.button("🚀  ANALYZE ARGUMENTS  ·  FIND FALLACIES", use_container_width=True)
+
+# -------------------- Results --------------------
 if submitted:
     if not topic.strip() or not argument_a.strip() or not argument_b.strip():
-        st.warning("⚠️ Please enter the topic and both arguments.")
+        st.warning("⚠️ Please fill in the topic and both arguments.")
         st.stop()
 
-    scan = st.empty()
-    scan.markdown(
+    search_box = st.empty()
+    search_box.markdown(
         """
-        <div class="scan">
-            <div class="scan-icon">🧠</div>
-            <b>AI IS ANALYZING</b>
-            <small>🔍 Logic · 📚 Evidence · ⚠️ Fallacies · 🏆 Verdict</small>
+        <div class="scanner">
+            <div class="scanner-icon">🧠</div>
+            <div class="scanner-title">AI Reasoning Engine Active</div>
+            <div class="scanner-sub">
+                🔍 Scanning logic · 📚 checking evidence · ⚠️ detecting fallacies · 📊 calculating scores
+            </div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -913,12 +959,12 @@ if submitted:
     try:
         result = judge_arguments(topic, argument_a, argument_b)
         time.sleep(.8)
-    except Exception as exc:
-        scan.empty()
-        st.error(f"Analysis failed: {exc}")
+    except Exception as e:
+        search_box.empty()
+        st.error(f"❌ AI analysis failed: {e}")
         st.stop()
 
-    scan.empty()
+    search_box.empty()
 
     a = result["argument_a"]
     b = result["argument_b"]
@@ -929,105 +975,124 @@ if submitted:
     winner = str(result["winner"]).strip().upper()
     winner_total = total_a if winner == "A" else total_b
 
-    def clean(v):
-        return html.escape(str(v))
+    st.markdown('<div class="section-label">📊 02 · LIVE AI SCOREBOARD</div>', unsafe_allow_html=True)
 
-    def tags(items):
-        if not items:
-            return '<span style="color:#4ade80;font-size:.72rem;font-weight:800;">✨ No fallacies detected</span>'
-        return "".join(f'<span class="tag">⚠️ {clean(x)}</span>' for x in items)
-
+    bars = ""
     metrics = [
         ("🧠 LOGIC", a["logic"], b["logic"]),
         ("📚 EVIDENCE", a["evidence"], b["evidence"]),
         ("💬 PERSUASIVENESS", a["persuasiveness"], b["persuasiveness"]),
     ]
 
-    metric_html = ""
     for label, va, vb in metrics:
-        metric_html += f"""
+        bars += f"""
         <div class="metric">
-            <div class="metric-top"><span>{label}</span><span>{va}/10 &nbsp;&nbsp; {vb}/10</span></div>
-            <div class="trackrow">
-                <div class="track"><div class="fillA" style="width:{va*10}%"></div></div>
-                <div class="track"><div class="fillB" style="width:{vb*10}%"></div></div>
+            <div class="metric-top">
+                <span>{label}</span>
+                <span class="metric-values">{va}/10&nbsp;&nbsp;&nbsp; {vb}/10</span>
+            </div>
+            <div class="metric-track">
+                <div class="track"><div class="fill-a" style="width:{va*10}%"></div></div>
+                <div class="track"><div class="fill-b" style="width:{vb*10}%"></div></div>
             </div>
         </div>
         """
 
-    st.markdown('<div class="section">🧠 AI verdict</div>', unsafe_allow_html=True)
-
     st.markdown(
         f"""
-        <div class="result">
-            <div class="scores">
-                <div>
-                    <div class="score-name">🔵 SIDE A</div>
-                    <div class="score">{total_a}</div>
-                    <div style="color:#5f5868;font-size:.62rem;letter-spacing:.12em;">OUT OF 30</div>
+        <div class="glass scoreboard">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                <span style="color:#8f879c;font-size:.68rem;font-weight:800;letter-spacing:.12em;">DATABASE RESULT · VERIFIED</span>
+                <span class="ai-status"><span class="ai-dot"></span> ANALYZED</span>
+            </div>
+            <div class="vs-grid">
+                <div class="score-side">
+                    <div class="score-name">🔵 ARGUMENT A</div>
+                    <div class="score-number">{total_a}</div>
+                    <div class="score-max">TOTAL / 30</div>
                 </div>
+
                 <div class="vs">VS</div>
-                <div>
-                    <div class="score-name">🟣 SIDE B</div>
-                    <div class="score">{total_b}</div>
-                    <div style="color:#5f5868;font-size:.62rem;letter-spacing:.12em;">OUT OF 30</div>
+
+                <div class="score-side">
+                    <div class="score-name">🟣 ARGUMENT B</div>
+                    <div class="score-number">{total_b}</div>
+                    <div class="score-max">TOTAL / 30</div>
                 </div>
             </div>
-            {metric_html}
+            {bars}
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    st.markdown('<div class="section">⚠️ Fallacy detection</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-label">⚠️ 03 · FALLACY DETECTION</div>', unsafe_allow_html=True)
 
-    ca, cb = st.columns(2, gap="large")
+    def safe_text(value):
+        return html.escape(str(value))
 
-    with ca:
+    def fallacy_tags(items):
+        if items:
+            return "".join(
+                f'<span class="tag">⚠️ {safe_text(item)}</span>'
+                for item in items
+            )
+        return '<div class="clean">✨ No fallacies detected</div>'
+
+    col1, col2 = st.columns(2, gap="large")
+
+    with col1:
         st.markdown(
             f"""
-            <div class="reason">
-                <h3>🔵 Side A</h3>
-                <p>{clean(a["reason"])}</p>
-                {tags(a["fallacies"])}
+            <div class="reason-card">
+                <div class="reason-head">
+                    <div class="reason-title">🔵 Argument A</div>
+                    <div class="reason-icon">🧠</div>
+                </div>
+                <div class="reason-text">{safe_text(a["reason"])}</div>
+                {fallacy_tags(a["fallacies"])}
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-    with cb:
+    with col2:
         st.markdown(
             f"""
-            <div class="reason">
-                <h3>🟣 Side B</h3>
-                <p>{clean(b["reason"])}</p>
-                {tags(b["fallacies"])}
+            <div class="reason-card">
+                <div class="reason-head">
+                    <div class="reason-title">🟣 Argument B</div>
+                    <div class="reason-icon">🧠</div>
+                </div>
+                <div class="reason-text">{safe_text(b["reason"])}</div>
+                {fallacy_tags(b["fallacies"])}
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-    st.markdown('<div class="section">👑 Final decision</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-label">👑 04 · FINAL VERDICT</div>', unsafe_allow_html=True)
 
     st.markdown(
         f"""
         <div class="winner">
             <span class="crown">👑</span>
-            <h2>🏆 SIDE {clean(winner)} WINS</h2>
-            <div class="pill2">⚡ {winner_total} / 30 · STRONGER ARGUMENT</div>
-            <p>{clean(result["overall_reason"])}</p>
+            <div class="winner-title">🏆 ARGUMENT {safe_text(winner)} WINS</div>
+            <div style="color:#facc15;font-weight:900;margin-top:.35rem;">
+                {winner_total} / 30 · STRONGER REASONING
+            </div>
+            <div class="winner-reason">{safe_text(result["overall_reason"])}</div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    st.write("")
-    if st.button("🔄  DEBATE ANOTHER TOPIC", use_container_width=True, key="reset_debate"):
-        for key in ["topic_input", "argument_a_input", "argument_b_input"]:
-            st.session_state.pop(key, None)
+    if st.button("🔄  START NEW DEBATE", use_container_width=True):
         st.rerun()
 
-st.markdown(
-    '<div style="text-align:center;color:#4e4857;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;margin-top:2.2rem;">HACK TITANS · FALLACY FINDER</div>',
-    unsafe_allow_html=True,
-)
+    st.markdown(
+        '<div class="footer">🔍 FALLACY FINDER · HACK TITANS · AI DEBATE INTELLIGENCE</div>',
+        unsafe_allow_html=True,
+    )
+
+st.markdown('</div>', unsafe_allow_html=True)
