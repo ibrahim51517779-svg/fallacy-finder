@@ -1456,7 +1456,7 @@ if not st.session_state.entered:
         """,
         unsafe_allow_html=True,
     )
-    if st.button("🚀  ENTER THE DEBATE ARENA", use_container_width=True):
+    if st.button("🚀  ENTER THE DEBATE ARENA", use_container_width=True, key="intro_enter_arena"):
         st.session_state.entered = True
         st.rerun()
     st.markdown(
@@ -1474,7 +1474,7 @@ if not st.session_state.entered:
     st.write("")
     c1, c2, c3 = st.columns([1, 1.2, 1])
     with c2:
-        if st.button("🚀  ENTER THE DEBATE ARENA", use_container_width=True):
+        if st.button("🚀  ENTER THE DEBATE ARENA", use_container_width=True, key="intro_enter_arena_2"):
             st.session_state.entered = True
             st.rerun()
 
@@ -1566,7 +1566,7 @@ with st.container():
     st.markdown("</div>", unsafe_allow_html=True)
 
     st.write("")
-    submitted = st.button("🚀  ANALYZE ARGUMENTS  ·  FIND FALLACIES", use_container_width=True)
+    submitted = st.button("🚀  ANALYZE ARGUMENTS  ·  FIND FALLACIES", use_container_width=True, key="analyze_arguments")
 
 # -------------------- Results --------------------
 if submitted:
