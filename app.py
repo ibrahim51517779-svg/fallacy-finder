@@ -5,7 +5,7 @@ import json
 import time
 import base64
 
-genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 model = genai.GenerativeModel("gemini-3.6-flash")
 
 
