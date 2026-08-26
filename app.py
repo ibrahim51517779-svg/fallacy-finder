@@ -1,4 +1,4 @@
-
+import streamlit as st
 import google.generativeai as genai
 import os
 import json
@@ -1015,4 +1015,5 @@ if submitted:
         '<div class="footer">🔍 FALLACY FINDER · HACK TITANS · AI DEBATE INTELLIGENCE</div>',
         unsafe_allow_html=True,
     )
+
 
