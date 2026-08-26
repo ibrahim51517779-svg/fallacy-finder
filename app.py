@@ -293,6 +293,14 @@ body:after{
 .s1{left:13%;top:25%}.s2{right:15%;top:27%;animation-delay:-1s}.s3{left:18%;bottom:21%;animation-delay:-2s}.s4{right:17%;bottom:24%;animation-delay:-.4s}
 @keyframes float{50%{transform:translateY(-16px) rotate(8deg);opacity:.9}}
 
+
+.title span{
+    background:linear-gradient(100deg,#f472b6,#a855f7,#22d3ee,#ffffff,#f472b6);
+    background-size:250% auto;
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
 /* ---------- main ---------- */
 
 .brandbar{
@@ -491,9 +499,18 @@ if not st.session_state.entered:
 
             <div class="intro-content">
                 <div class="pill">⚡ HACK TITANS · AI DEBATE ARENA</div>
+
                 <div class="team">HACK TITANS</div>
-                <div class="title">FALLACY<br>FINDER</div>
-                <div class="subtitle">🧠 THINK · TEST · DECIDE</div>
+
+                <div class="title">
+                    FALLACY<br>
+                    <span>FINDER</span>
+                </div>
+
+                <div class="subtitle">
+                    🧠 AI-POWERED LOGIC INTELLIGENCE
+                </div>
+
                 <div class="glow-line"></div>
 
                 <div class="desc">
@@ -504,15 +521,17 @@ if not st.session_state.entered:
                 <div class="feature-row">
                     <div class="feature">
                         <b>🧠 AI JUDGE</b>
-                        <span>Smart reasoning</span>
+                        <span>Smart Analysis</span>
                     </div>
+
                     <div class="feature">
                         <b>⚠️ FALLACY SCAN</b>
-                        <span>Logic detection</span>
+                        <span>Logic Detection</span>
                     </div>
+
                     <div class="feature">
-                        <b>🏆 FAIR VERDICT</b>
-                        <span>Balanced scoring</span>
+                        <b>🏆 AI VERDICT</b>
+                        <span>Fair Decision</span>
                     </div>
                 </div>
             </div>
@@ -520,6 +539,7 @@ if not st.session_state.entered:
         """,
         unsafe_allow_html=True,
     )
+
 
     st.write("")
     left, middle, right = st.columns([1, 1.4, 1])
