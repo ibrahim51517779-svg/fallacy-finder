@@ -27,11 +27,27 @@ try:
 except Exception:
     API_KEY = os.environ.get("GEMINI_API_KEY", "")
 
+API_KEY = API_KEY.strip() if isinstance(API_KEY, str) else API_KEY
+
 if not API_KEY:
     st.error("🔑 GEMINI_API_KEY is missing. Add it in Streamlit Cloud → Settings → Secrets.")
     st.stop()
 
+
 client = genai.Client(api_key=API_KEY)
+
+# Optional diagnostic: confirms the API key + model before a debate.
+with st.expander("🔧 Gemini connection test"):
+    if st.button("Test Gemini API", key="test_gemini_api"):
+        try:
+            test_response = client.models.generate_content(
+                model="gemini-3.6-flash",
+                contents="Reply with exactly: GEMINI_OK",
+            )
+            st.success(f"Gemini connected: {test_response.text.strip()}")
+        except Exception as exc:
+            st.error("Gemini connection failed.")
+            st.code(str(exc), language="text")
 
 
 def judge_arguments(topic, argument_a, argument_b):
@@ -1284,7 +1300,13 @@ if submitted:
         time.sleep(.7)
     except Exception as exc:
         scan.empty()
-        st.error("Analysis failed. Please check your Gemini API key and try again.")
+        st.error("❌ Gemini analysis failed")
+        st.code(str(exc), language="text")
+        st.info(
+            "Check: 1) GEMINI_API_KEY in Streamlit Cloud Secrets, "
+            "2) requirements.txt contains google-genai, "
+            "3) the app has been redeployed after changing Secrets."
+        )
         st.stop()
 
     scan.empty()
