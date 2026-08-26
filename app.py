@@ -498,6 +498,433 @@ footer {{
     font-size: .9rem;
 }
 
+
+/* =========================================================
+   CINEMATIC TEXTURE SYSTEM
+   ========================================================= */
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 50;
+    opacity: .09;
+    background-image:
+        repeating-linear-gradient(
+            0deg,
+            rgba(255,255,255,.07) 0px,
+            rgba(255,255,255,.07) 1px,
+            transparent 1px,
+            transparent 4px
+        );
+    mix-blend-mode: soft-light;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 49;
+    opacity: .12;
+    background:
+        radial-gradient(circle at 15% 20%, rgba(255,255,255,.25) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 80% 32%, rgba(255,255,255,.22) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 42% 75%, rgba(255,255,255,.18) 0 1px, transparent 1.5px),
+        radial-gradient(circle at 70% 85%, rgba(255,255,255,.14) 0 1px, transparent 1.5px);
+    background-size: 180px 180px, 260px 260px, 220px 220px, 310px 310px;
+    animation: starDrift 22s linear infinite;
+}
+
+@keyframes starDrift {
+    from { transform: translate3d(0,0,0); }
+    to   { transform: translate3d(-35px,24px,0); }
+}
+
+/* Stronger ambient field */
+.aurora::before,
+.aurora::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(85px);
+    pointer-events: none;
+}
+
+.aurora::before {
+    width: 480px;
+    height: 480px;
+    left: 20%;
+    top: -160px;
+    background: rgba(122, 58, 237, .16);
+    animation: megaGlow 13s ease-in-out infinite alternate;
+}
+
+.aurora::after {
+    width: 420px;
+    height: 420px;
+    right: 10%;
+    bottom: -170px;
+    background: rgba(34, 211, 238, .11);
+    animation: megaGlow 17s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes megaGlow {
+    0%   { transform: translate3d(0,0,0) scale(.88); }
+    50%  { transform: translate3d(45px,-25px,0) scale(1.08); }
+    100% { transform: translate3d(-35px,30px,0) scale(.96); }
+}
+
+/* =========================================================
+   PREMIUM INTRO
+   ========================================================= */
+
+.intro-screen {
+    position: relative;
+    min-height: 76vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 2rem;
+    border-radius: 36px;
+    background:
+        radial-gradient(circle at 50% 35%, rgba(168,85,247,.18), transparent 31%),
+        radial-gradient(circle at 12% 80%, rgba(34,211,238,.09), transparent 22%),
+        radial-gradient(circle at 90% 20%, rgba(244,114,182,.09), transparent 24%),
+        linear-gradient(160deg, rgba(11,7,25,.96), rgba(4,3,11,.86));
+    border: 1px solid rgba(255,255,255,.09);
+    box-shadow:
+        0 40px 120px rgba(0,0,0,.46),
+        inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+.intro-screen::before {
+    content: "";
+    position: absolute;
+    inset: 18px;
+    border: 1px solid rgba(168,85,247,.18);
+    border-radius: 28px;
+    pointer-events: none;
+}
+
+.intro-screen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(90deg, transparent 0 49.5%, rgba(168,85,247,.07) 50%, transparent 50.5%),
+        linear-gradient(transparent 0 49.5%, rgba(34,211,238,.05) 50%, transparent 50.5%);
+    background-size: 95px 95px;
+    mask-image: radial-gradient(circle at center, black 0%, transparent 78%);
+}
+
+.intro-content {
+    position: relative;
+    z-index: 3;
+    width: min(900px, 100%);
+    text-align: center;
+}
+
+.intro-topline {
+    display: inline-flex;
+    align-items: center;
+    gap: .7rem;
+    padding: .55rem 1rem;
+    border-radius: 999px;
+    background: rgba(168,85,247,.07);
+    border: 1px solid rgba(168,85,247,.30);
+    color: #d8b4fe;
+    font-size: .69rem;
+    font-weight: 900;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    box-shadow: 0 0 30px rgba(168,85,247,.10);
+    animation: introRise .8s ease-out both;
+}
+
+.intro-brand {
+    margin-top: 1.2rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    font-weight: 900;
+    letter-spacing: .42em;
+    padding-left: .42em;
+    color: #f8fafc;
+    text-shadow: 0 0 35px rgba(168,85,247,.35);
+    animation: introRise .9s .08s ease-out both;
+}
+
+.intro-title {
+    margin: 1.4rem 0 .55rem;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(4.2rem, 11vw, 9rem);
+    line-height: .84;
+    font-weight: 900;
+    letter-spacing: -.075em;
+    background:
+        linear-gradient(
+            100deg,
+            #ffffff 0%,
+            #e9d5ff 23%,
+            #c084fc 45%,
+            #f472b6 67%,
+            #67e8f9 89%,
+            #ffffff 100%
+        );
+    background-size: 250% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation:
+        introRise 1s .14s ease-out both,
+        titleShimmer 6s linear infinite;
+    text-shadow: 0 0 60px rgba(168,85,247,.18);
+}
+
+@keyframes titleShimmer {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 250% 50%; }
+}
+
+.intro-subtitle {
+    color: #aaa3b7;
+    font-size: clamp(.78rem, 1.5vw, 1rem);
+    font-weight: 700;
+    letter-spacing: .27em;
+    text-transform: uppercase;
+    animation: introRise 1s .22s ease-out both;
+}
+
+.intro-description {
+    max-width: 650px;
+    margin: 1.15rem auto 0;
+    color: #716b7d;
+    font-size: .92rem;
+    line-height: 1.8;
+    animation: introRise 1s .30s ease-out both;
+}
+
+.intro-line {
+    width: 260px;
+    height: 2px;
+    margin: 1.6rem auto;
+    background: linear-gradient(90deg, transparent, #a855f7, #22d3ee, transparent);
+    box-shadow: 0 0 24px rgba(168,85,247,.55);
+    animation: linePulse 2.8s ease-in-out infinite;
+}
+
+@keyframes linePulse {
+    0%,100% { opacity: .5; transform: scaleX(.72); }
+    50% { opacity: 1; transform: scaleX(1); }
+}
+
+.intro-stats {
+    display: flex;
+    justify-content: center;
+    gap: .7rem;
+    flex-wrap: wrap;
+    margin: 1.3rem auto 1.6rem;
+    animation: introRise 1s .38s ease-out both;
+}
+
+.intro-stat {
+    min-width: 135px;
+    padding: .8rem .95rem;
+    border-radius: 16px;
+    background: rgba(255,255,255,.025);
+    border: 1px solid rgba(255,255,255,.08);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+.intro-stat-value {
+    color: #fff;
+    font-weight: 900;
+    font-size: .96rem;
+}
+
+.intro-stat-label {
+    margin-top: .18rem;
+    color: #696273;
+    font-size: .59rem;
+    font-weight: 800;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+}
+
+.intro-button-wrap {
+    max-width: 350px;
+    margin: 0 auto;
+    animation: introRise 1s .46s ease-out both;
+}
+
+.intro-corner {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-color: rgba(168,85,247,.23);
+    z-index: 2;
+}
+
+.intro-corner.tl {
+    top: 34px;
+    left: 34px;
+    border-top: 2px solid;
+    border-left: 2px solid;
+    border-top-left-radius: 18px;
+}
+
+.intro-corner.tr {
+    top: 34px;
+    right: 34px;
+    border-top: 2px solid;
+    border-right: 2px solid;
+    border-top-right-radius: 18px;
+}
+
+.intro-corner.bl {
+    bottom: 34px;
+    left: 34px;
+    border-bottom: 2px solid;
+    border-left: 2px solid;
+    border-bottom-left-radius: 18px;
+}
+
+.intro-corner.br {
+    bottom: 34px;
+    right: 34px;
+    border-bottom: 2px solid;
+    border-right: 2px solid;
+    border-bottom-right-radius: 18px;
+}
+
+.intro-particle {
+    position: absolute;
+    z-index: 2;
+    color: #f8fafc;
+    opacity: .45;
+    font-size: .85rem;
+    animation: particleFloat 4s ease-in-out infinite;
+}
+
+.intro-particle.p1 { left: 12%; top: 26%; }
+.intro-particle.p2 { right: 14%; top: 31%; animation-delay: -1.2s; }
+.intro-particle.p3 { left: 18%; bottom: 24%; animation-delay: -2.2s; }
+.intro-particle.p4 { right: 20%; bottom: 19%; animation-delay: -.6s; }
+
+@keyframes particleFloat {
+    0%,100% { transform: translateY(0) rotate(0deg); opacity: .30; }
+    50% { transform: translateY(-18px) rotate(8deg); opacity: .8; }
+}
+
+@keyframes introRise {
+    from { opacity: 0; transform: translateY(24px) scale(.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* =========================================================
+   MAIN APP — matching visual language
+   ========================================================= */
+
+.main-shell {
+    position: relative;
+    overflow: hidden;
+    padding: 1rem;
+    border-radius: 34px;
+}
+
+.main-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(135deg, rgba(168,85,247,.04), transparent 28%),
+        linear-gradient(315deg, rgba(34,211,238,.035), transparent 24%);
+}
+
+.main-brand-chip {
+    position: relative;
+    z-index: 3;
+    width: fit-content;
+    margin: .1rem auto 1.15rem;
+    padding: .58rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    border-radius: 999px;
+    background: rgba(8,6,18,.68);
+    border: 1px solid rgba(255,255,255,.09);
+    box-shadow:
+        0 0 35px rgba(168,85,247,.10),
+        inset 0 1px 0 rgba(255,255,255,.05);
+}
+
+.main-brand-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 900;
+    letter-spacing: .28em;
+    padding-left: .28em;
+    color: #f8fafc;
+    font-size: .78rem;
+}
+
+.main-brand-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 12px rgba(74,222,128,.9);
+    animation: pulseDot 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+    0%,100% { transform: scale(.8); opacity: .6; }
+    50% { transform: scale(1.2); opacity: 1; }
+}
+
+/* Gives the topic and argument area a subtle engraved texture */
+.topic-card {
+    background:
+        linear-gradient(rgba(255,255,255,.018), rgba(255,255,255,.008)),
+        radial-gradient(circle at 20% 0%, rgba(168,85,247,.07), transparent 25%),
+        radial-gradient(circle at 90% 100%, rgba(34,211,238,.04), transparent 25%),
+        rgba(10,8,21,.79) !important;
+}
+
+/* Better section dividers */
+.section-label {
+    position: relative;
+    padding-bottom: .65rem;
+}
+
+.section-label::after {
+    height: 1px;
+}
+
+/* Premium scanner environment */
+.scanner {
+    background:
+        radial-gradient(circle at 50% 45%, rgba(168,85,247,.10), transparent 38%),
+        repeating-linear-gradient(
+            90deg,
+            transparent 0,
+            transparent 48px,
+            rgba(255,255,255,.018) 49px,
+            transparent 50px
+        ),
+        rgba(7,5,16,.86);
+}
+
+/* More dimensional analysis stage */
+.result-stage {
+    box-shadow:
+        0 30px 100px rgba(0,0,0,.48),
+        inset 0 1px 0 rgba(255,255,255,.055);
+}
+
+
 /* ---------- Section headers ---------- */
 
 .section-label {{
@@ -981,17 +1408,66 @@ if "entered" not in st.session_state:
 if not st.session_state.entered:
     st.markdown(
         """
-        <div class="hero" style="padding-top:12vh;">
-            <div class="hero-kicker">⚡ HACK TITANS · AI INNOVATION</div>
-            <div class="hero-title">FALLACY<br>FINDER</div>
-            <div class="hero-sub">🧠 AI Debate Intelligence Arena</div>
-            <div class="hero-line"></div>
-            <div style="color:#81798e;max-width:560px;margin:auto;line-height:1.7;">
-                Detect weak reasoning. Expose logical fallacies.
-                Compare arguments. Let AI deliver the verdict.
+        <div class="intro-screen">
+            <div class="intro-corner tl"></div>
+            <div class="intro-corner tr"></div>
+            <div class="intro-corner bl"></div>
+            <div class="intro-corner br"></div>
+
+            <div class="intro-particle p1">✦</div>
+            <div class="intro-particle p2">◇</div>
+            <div class="intro-particle p3">✧</div>
+            <div class="intro-particle p4">⚡</div>
+
+            <div class="intro-content">
+                <div class="intro-topline">🔴 SYSTEM ONLINE · HACKATHON EDITION</div>
+                <div class="intro-brand">HACK TITANS</div>
+
+                <div class="intro-title">FALLACY<br>FINDER</div>
+
+                <div class="intro-subtitle">
+                    🧠 AI DEBATE INTELLIGENCE · LOGIC · EVIDENCE · PERSUASION
+                </div>
+
+                <div class="intro-line"></div>
+
+                <div class="intro-description">
+                    Challenge two arguments. Let the AI inspect their reasoning,
+                    detect hidden logical fallacies, score their strength,
+                    and deliver a cinematic final verdict.
+                </div>
+
+                <div class="intro-stats">
+                    <div class="intro-stat">
+                        <div class="intro-stat-value">🧠 AI JUDGE</div>
+                        <div class="intro-stat-label">Reasoning Engine</div>
+                    </div>
+                    <div class="intro-stat">
+                        <div class="intro-stat-value">⚠️ FALLACY SCAN</div>
+                        <div class="intro-stat-label">Logic Detection</div>
+                    </div>
+                    <div class="intro-stat">
+                        <div class="intro-stat-value">🏆 30 POINTS</div>
+                        <div class="intro-stat-label">Score System</div>
+                    </div>
+                </div>
+
+                <div class="intro-button-wrap">
+        """,
+        unsafe_allow_html=True,
+    )
+    if st.button("🚀  ENTER THE DEBATE ARENA", use_container_width=True):
+        st.session_state.entered = True
+        st.rerun()
+    st.markdown(
+        """
+            </div>
+            <div style="margin-top:1rem;color:#4f485d;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;">
+                Secure AI analysis · Tanglish + English supported
             </div>
         </div>
-        """,
+    </div>
+    """,
         unsafe_allow_html=True,
     )
 
@@ -1039,6 +1515,17 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+st.markdown(
+    """
+    <div class="main-shell">
+        <div class="main-brand-chip">
+            <span class="main-brand-dot"></span>
+            <span class="main-brand-name">HACK TITANS</span>
+            <span style="color:#625b6c;font-size:.58rem;letter-spacing:.15em;">AI LAB</span>
+        </div>
+    """,
+    unsafe_allow_html=True,
+)
 st.markdown('<div class="section-label">📝 01 · BUILD YOUR DEBATE</div>', unsafe_allow_html=True)
 
 
@@ -1232,3 +1719,4 @@ if submitted:
         '<div class="footer">🔍 FALLACY FINDER · HACK TITANS · AI DEBATE INTELLIGENCE</div>',
         unsafe_allow_html=True,
     )
+st.markdown("</div>", unsafe_allow_html=True)
