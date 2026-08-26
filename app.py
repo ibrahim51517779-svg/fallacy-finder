@@ -5,6 +5,7 @@ import json
 import time
 import base64
 import html
+import streamlit.components.v1 as components
 
 # =========================================================
 # FALLACY FINDER — HACK TITANS
@@ -489,74 +490,353 @@ if "entered" not in st.session_state:
     st.session_state.entered = False
 
 if not st.session_state.entered:
-    st.markdown(
+    components.html(
         """
-        <div class="intro">
-            <div class="spark s1">✦</div>
-            <div class="spark s2">◇</div>
-            <div class="spark s3">✧</div>
-            <div class="spark s4">⚡</div>
+        <!doctype html>
+        <html>
+        <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            *{box-sizing:border-box}
+            html,body{margin:0;width:100%;height:100%;overflow:hidden}
+            body{
+                font-family:Inter,Arial,sans-serif;
+                background:
+                    radial-gradient(circle at 50% 35%,rgba(155,92,255,.24),transparent 30%),
+                    radial-gradient(circle at 15% 75%,rgba(54,217,255,.10),transparent 24%),
+                    radial-gradient(circle at 88% 20%,rgba(244,91,184,.10),transparent 22%),
+                    linear-gradient(155deg,#100824,#04030b 72%);
+                color:#f8fafc;
+            }
 
-            <div class="intro-content">
-                <div class="pill">⚡ HACK TITANS · AI DEBATE ARENA</div>
+            body:before{
+                content:"";
+                position:fixed;inset:0;
+                background:
+                    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+                    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+                background-size:70px 70px;
+                mask-image:radial-gradient(circle at center,#000 10%,transparent 80%);
+            }
 
-                <div class="team">HACK TITANS</div>
+            body:after{
+                content:"";
+                position:fixed;inset:0;
+                background:repeating-linear-gradient(
+                    0deg,
+                    rgba(255,255,255,.025) 0 1px,
+                    transparent 1px 5px
+                );
+                opacity:.55;
+                pointer-events:none;
+            }
 
-                <div class="title">
-                    FALLACY<br>
-                    <span>FINDER</span>
-                </div>
+            .wrap{
+                position:relative;
+                width:100%;
+                height:100%;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+            }
 
-                <div class="subtitle">
-                    🧠 AI-POWERED LOGIC INTELLIGENCE
-                </div>
+            .panel{
+                position:relative;
+                width:min(1080px,94vw);
+                min-height:88vh;
+                border:1px solid rgba(255,255,255,.10);
+                border-radius:34px;
+                overflow:hidden;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                background:
+                    radial-gradient(circle at 50% 35%,rgba(155,92,255,.15),transparent 35%),
+                    rgba(5,4,13,.78);
+                box-shadow:
+                    0 40px 110px rgba(0,0,0,.52),
+                    inset 0 1px 0 rgba(255,255,255,.06);
+                backdrop-filter:blur(18px);
+            }
 
-                <div class="glow-line"></div>
+            .panel:before{
+                content:"";
+                position:absolute;
+                inset:18px;
+                border-radius:25px;
+                border:1px solid rgba(155,92,255,.18);
+            }
 
-                <div class="desc">
-                    Discover weak reasoning, expose hidden logical fallacies,
-                    compare two arguments and let AI choose the stronger case.
-                </div>
+            .corner{
+                position:absolute;
+                width:90px;height:90px;
+                border-color:rgba(54,217,255,.22);
+            }
+            .tl{left:28px;top:28px;border-left:2px solid;border-top:2px solid;border-radius:15px 0 0 0}
+            .tr{right:28px;top:28px;border-right:2px solid;border-top:2px solid;border-radius:0 15px 0 0}
+            .bl{left:28px;bottom:28px;border-left:2px solid;border-bottom:2px solid;border-radius:0 0 0 15px}
+            .br{right:28px;bottom:28px;border-right:2px solid;border-bottom:2px solid;border-radius:0 0 15px 0}
 
-                <div class="feature-row">
-                    <div class="feature">
-                        <b>🧠 AI JUDGE</b>
-                        <span>Smart Analysis</span>
-                    </div>
+            .orb{
+                position:absolute;
+                border-radius:50%;
+                filter:blur(70px);
+                opacity:.22;
+                animation:drift 12s ease-in-out infinite alternate;
+            }
+            .o1{width:260px;height:260px;background:#8b5cf6;left:-100px;top:-50px}
+            .o2{width:220px;height:220px;background:#22d3ee;right:-70px;bottom:-50px;animation-delay:-4s}
+            .o3{width:170px;height:170px;background:#ec4899;right:22%;top:10%;animation-delay:-7s}
+            @keyframes drift{
+                from{transform:translate(0,0) scale(.9)}
+                to{transform:translate(45px,-25px) scale(1.12)}
+            }
 
-                    <div class="feature">
-                        <b>⚠️ FALLACY SCAN</b>
-                        <span>Logic Detection</span>
-                    </div>
+            .content{
+                position:relative;
+                z-index:3;
+                text-align:center;
+                width:min(820px,86%);
+            }
 
-                    <div class="feature">
-                        <b>🏆 AI VERDICT</b>
-                        <span>Fair Decision</span>
+            .pill{
+                display:inline-block;
+                padding:9px 18px;
+                border-radius:999px;
+                border:1px solid rgba(155,92,255,.35);
+                background:rgba(155,92,255,.07);
+                color:#ddd6fe;
+                font-size:10px;
+                font-weight:900;
+                letter-spacing:3px;
+                text-transform:uppercase;
+                animation:rise .8s both;
+            }
+
+            .team{
+                margin-top:23px;
+                font-size:16px;
+                font-weight:900;
+                letter-spacing:10px;
+                padding-left:10px;
+                color:white;
+                text-shadow:0 0 30px rgba(155,92,255,.45);
+                animation:rise .9s .08s both;
+            }
+
+            .title{
+                margin-top:22px;
+                font-size:clamp(56px,11vw,118px);
+                line-height:.82;
+                font-weight:900;
+                letter-spacing:-7px;
+                background:linear-gradient(100deg,#fff,#ddd6fe,#a855f7,#f472b6,#22d3ee,#fff);
+                background-size:300% auto;
+                -webkit-background-clip:text;
+                -webkit-text-fill-color:transparent;
+                animation:rise 1s .15s both,shine 7s linear infinite;
+                filter:drop-shadow(0 0 32px rgba(155,92,255,.20));
+            }
+
+            @keyframes shine{
+                from{background-position:0% 50%}
+                to{background-position:300% 50%}
+            }
+
+            .sub{
+                margin-top:22px;
+                color:#b7afc2;
+                font-size:11px;
+                font-weight:800;
+                letter-spacing:5px;
+                text-transform:uppercase;
+                animation:rise 1s .24s both;
+            }
+
+            .line{
+                width:230px;
+                height:2px;
+                margin:24px auto;
+                background:linear-gradient(90deg,transparent,#22d3ee,#a855f7,#f472b6,transparent);
+                box-shadow:0 0 24px rgba(155,92,255,.65);
+                animation:pulse 2.5s ease-in-out infinite;
+            }
+
+            .desc{
+                max-width:620px;
+                margin:auto;
+                color:#81798b;
+                font-size:13px;
+                line-height:1.8;
+                animation:rise 1s .32s both;
+            }
+
+            .cards{
+                display:flex;
+                justify-content:center;
+                gap:12px;
+                flex-wrap:wrap;
+                margin-top:28px;
+                animation:rise 1s .4s both;
+            }
+
+            .card{
+                min-width:145px;
+                padding:14px 16px;
+                border-radius:17px;
+                background:rgba(255,255,255,.025);
+                border:1px solid rgba(255,255,255,.08);
+                box-shadow:0 12px 30px rgba(0,0,0,.25);
+            }
+
+            .card strong{
+                display:block;
+                color:white;
+                font-size:11px;
+                font-weight:900;
+            }
+
+            .card span{
+                display:block;
+                margin-top:5px;
+                color:#625b6d;
+                font-size:8px;
+                font-weight:800;
+                letter-spacing:2px;
+                text-transform:uppercase;
+            }
+
+            .status{
+                display:flex;
+                justify-content:center;
+                align-items:center;
+                gap:9px;
+                margin-top:25px;
+                color:#5c5568;
+                font-size:8px;
+                font-weight:900;
+                letter-spacing:2px;
+                text-transform:uppercase;
+                animation:rise 1s .48s both;
+            }
+
+            .dot{
+                width:7px;height:7px;border-radius:50%;
+                background:#4ade80;
+                box-shadow:0 0 10px #4ade80;
+                animation:beat 1.4s infinite;
+            }
+
+            @keyframes beat{
+                50%{transform:scale(1.4);opacity:.75}
+            }
+
+            @keyframes pulse{
+                0%,100%{opacity:.45;transform:scaleX(.8)}
+                50%{opacity:1;transform:scaleX(1)}
+            }
+
+            @keyframes rise{
+                from{opacity:0;transform:translateY(22px) scale(.98)}
+                to{opacity:1;transform:none}
+            }
+
+            .particle{
+                position:absolute;
+                color:#fff;
+                opacity:.45;
+                z-index:4;
+                animation:float 3.5s ease-in-out infinite;
+            }
+            .p1{left:12%;top:24%}.p2{right:13%;top:27%;animation-delay:-1s}
+            .p3{left:18%;bottom:23%;animation-delay:-2s}.p4{right:18%;bottom:20%;animation-delay:-.5s}
+            @keyframes float{
+                50%{transform:translateY(-16px) rotate(8deg);opacity:.9}
+            }
+        </style>
+        </head>
+        <body>
+            <div class="wrap">
+                <div class="panel">
+                    <div class="corner tl"></div>
+                    <div class="corner tr"></div>
+                    <div class="corner bl"></div>
+                    <div class="corner br"></div>
+
+                    <div class="orb o1"></div>
+                    <div class="orb o2"></div>
+                    <div class="orb o3"></div>
+
+                    <div class="particle p1">✦</div>
+                    <div class="particle p2">◇</div>
+                    <div class="particle p3">✧</div>
+                    <div class="particle p4">⚡</div>
+
+                    <div class="content">
+                        <div class="pill">⚡ HACK TITANS · AI DEBATE ARENA</div>
+                        <div class="team">HACK TITANS</div>
+
+                        <div class="title">FALLACY<br>FINDER</div>
+
+                        <div class="sub">
+                            🧠 AI-POWERED LOGIC INTELLIGENCE
+                        </div>
+
+                        <div class="line"></div>
+
+                        <div class="desc">
+                            Discover weak reasoning, expose hidden logical fallacies,
+                            compare two arguments and let AI choose the stronger case.
+                        </div>
+
+                        <div class="cards">
+                            <div class="card">
+                                <strong>🧠 AI JUDGE</strong>
+                                <span>Smart Analysis</span>
+                            </div>
+                            <div class="card">
+                                <strong>⚠️ FALLACY SCAN</strong>
+                                <span>Logic Detection</span>
+                            </div>
+                            <div class="card">
+                                <strong>🏆 AI VERDICT</strong>
+                                <span>Fair Decision</span>
+                            </div>
+                        </div>
+
+                        <div class="status">
+                            <span class="dot"></span>
+                            AI ENGINE READY
+                            <span>•</span>
+                            SYSTEM ONLINE
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </body>
+        </html>
         """,
-        unsafe_allow_html=True,
+        height=690,
+        scrolling=False,
     )
 
-
     st.write("")
-    left, middle, right = st.columns([1, 1.4, 1])
+    _, middle, _ = st.columns([1, 1.35, 1])
     with middle:
         if st.button(
             "🚀  ENTER THE DEBATE ARENA",
             use_container_width=True,
-            key="intro_enter",
+            key="intro_enter_final",
         ):
             st.session_state.entered = True
             st.rerun()
 
     st.markdown(
-        '<div style="text-align:center;color:#555061;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;margin-top:1.2rem;">Tanglish + English supported</div>',
+        '<div style="text-align:center;color:#555061;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;margin-top:1rem;">Tanglish + English supported</div>',
         unsafe_allow_html=True,
     )
-    st.stop()
+
 
 
 # =========================================================
