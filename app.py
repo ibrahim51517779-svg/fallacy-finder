@@ -5,6 +5,7 @@ import json
 import time
 import base64
 import html
+import textwrap
 import streamlit.components.v1 as components
 
 # =========================================================
@@ -789,14 +790,14 @@ st.markdown(CSS, unsafe_allow_html=True)
 # =========================================================
 
 st.markdown(
-    """
+    textwrap.dedent("""
     <div class="bg-layer"></div>
     <div class="ambient">
         <span class="one"></span>
         <span class="two"></span>
         <span class="three"></span>
     </div>
-    """,
+    """),
     unsafe_allow_html=True,
 )
 
@@ -1198,7 +1199,7 @@ if not st.session_state.entered:
 # =========================================================
 
 st.markdown(
-    """
+    textwrap.dedent("""
     <div class="brand">
         <span class="brand-dot"></span>
         <span class="brand-name">HACK TITANS</span>
@@ -1207,7 +1208,7 @@ st.markdown(
 
     <div class="hero-title">🔍 FALLACY FINDER</div>
     <div class="hero-sub">AI-powered debate intelligence</div>
-    """,
+    """),
     unsafe_allow_html=True,
 )
 
@@ -1267,7 +1268,7 @@ if submitted:
     scan = st.empty()
 
     scan.markdown(
-        """
+        textwrap.dedent("""
         <div class="scanner">
             <div class="scanner-icon">🧠</div>
             <div class="scanner-title">AI IS ANALYZING</div>
@@ -1275,7 +1276,7 @@ if submitted:
                 🔍 Logic &nbsp;·&nbsp; 📚 Evidence &nbsp;·&nbsp; ⚠️ Fallacies &nbsp;·&nbsp; 🏆 Verdict
             </div>
         </div>
-        """,
+        """),
         unsafe_allow_html=True,
     )
 
@@ -1342,7 +1343,7 @@ if submitted:
     )
 
     st.markdown(
-        f"""
+        textwrap.dedent(f"""
         <div class="result">
             <div class="scores">
                 <div>
@@ -1366,7 +1367,7 @@ if submitted:
 
             {metric_rows}
         </div>
-        """,
+        """),
         unsafe_allow_html=True,
     )
 
@@ -1379,25 +1380,25 @@ if submitted:
 
     with ca:
         st.markdown(
-            f"""
+            textwrap.dedent(f"""
             <div class="reason">
                 <h3>🔵 Side A</h3>
                 <p>{esc(a["reason"])}</p>
                 {fallacy_html(a["fallacies"])}
             </div>
-            """,
+            """),
             unsafe_allow_html=True,
         )
 
     with cb:
         st.markdown(
-            f"""
+            textwrap.dedent(f"""
             <div class="reason">
                 <h3>🟣 Side B</h3>
                 <p>{esc(b["reason"])}</p>
                 {fallacy_html(b["fallacies"])}
             </div>
-            """,
+            """),
             unsafe_allow_html=True,
         )
 
@@ -1407,7 +1408,7 @@ if submitted:
     )
 
     st.markdown(
-        f"""
+        textwrap.dedent(f"""
         <div class="winner">
             <span class="crown">👑</span>
             <h2>🏆 SIDE {esc(winner)} WINS</h2>
@@ -1418,7 +1419,7 @@ if submitted:
                 {esc(result["overall_reason"])}
             </div>
         </div>
-        """,
+        """),
         unsafe_allow_html=True,
     )
 
