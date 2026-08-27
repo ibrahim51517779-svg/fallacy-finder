@@ -13,6 +13,23 @@ import streamlit.components.v1 as components
 # Clean cinematic Streamlit version
 # =========================================================
 
+
+def html_block(raw: str) -> str:
+    """
+    Safely prepare a raw HTML string for st.markdown(unsafe_allow_html=True).
+
+    Two things break Streamlit/CommonMark HTML rendering otherwise:
+    1. Leading indentation copied from Python source (4+ spaces) makes
+       Markdown treat the line as a CODE block instead of an HTML block.
+    2. A blank line anywhere inside the HTML closes the HTML block early,
+       so everything after it gets dumped back out as literal text.
+
+    This dedents the string and removes every blank line so the whole
+    thing is always parsed as one continuous HTML block.
+    """
+    dedented = textwrap.dedent(raw)
+    return "\n".join(line for line in dedented.splitlines() if line.strip() != "")
+
 st.set_page_config(
     page_title="Fallacy Finder | Hack Titans",
     page_icon="🔍",
@@ -790,7 +807,7 @@ st.markdown(CSS, unsafe_allow_html=True)
 # =========================================================
 
 st.markdown(
-    textwrap.dedent("""
+    html_block("""
     <div class="bg-layer"></div>
     <div class="ambient">
         <span class="one"></span>
@@ -1199,7 +1216,7 @@ if not st.session_state.entered:
 # =========================================================
 
 st.markdown(
-    textwrap.dedent("""
+    html_block("""
     <div class="brand">
         <span class="brand-dot"></span>
         <span class="brand-name">HACK TITANS</span>
@@ -1268,7 +1285,7 @@ if submitted:
     scan = st.empty()
 
     scan.markdown(
-        textwrap.dedent("""
+        html_block("""
         <div class="scanner">
             <div class="scanner-icon">🧠</div>
             <div class="scanner-title">AI IS ANALYZING</div>
@@ -1343,7 +1360,7 @@ if submitted:
     )
 
     st.markdown(
-        textwrap.dedent(f"""
+        html_block(f"""
         <div class="result">
             <div class="scores">
                 <div>
@@ -1380,7 +1397,7 @@ if submitted:
 
     with ca:
         st.markdown(
-            textwrap.dedent(f"""
+            html_block(f"""
             <div class="reason">
                 <h3>🔵 Side A</h3>
                 <p>{esc(a["reason"])}</p>
@@ -1392,7 +1409,7 @@ if submitted:
 
     with cb:
         st.markdown(
-            textwrap.dedent(f"""
+            html_block(f"""
             <div class="reason">
                 <h3>🟣 Side B</h3>
                 <p>{esc(b["reason"])}</p>
@@ -1408,7 +1425,7 @@ if submitted:
     )
 
     st.markdown(
-        textwrap.dedent(f"""
+        html_block(f"""
         <div class="winner">
             <span class="crown">👑</span>
             <h2>🏆 SIDE {esc(winner)} WINS</h2>
